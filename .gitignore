@@ -1,0 +1,66 @@
+# Файлы окружения и секреты
+.env
+.env.local
+.env*.backup
+secrets.json
+config_private.py
+
+# Файлы данных и индексов
+*.pkl
+*.pickle
+faiss_index/
+Link.txt
+index.pkl
+
+# Кэши и временные файлы
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# Логи и дампы
+*.log
+*.sqlite
+*.dump
+
+# IDE и редакторы
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-*
+
+# Операционные системы
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Питоновские артефакты
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+*.egg
+*.manifest
+*.spec
+
+# Виртуальные окружения
+venv/
+env/
+.venv/
+ENV/
+
+# Jupyter ноутбуки
+.ipynb_checkpoints/
+*.ipynb
+
+# Тестовые покрытия
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Документация
+docs/_build/
