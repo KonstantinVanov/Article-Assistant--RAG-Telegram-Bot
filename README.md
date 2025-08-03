@@ -21,6 +21,10 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - **Source Citing** - Always shows evidence for answers
 - **Persistent Storage** - Remembers indexed articles between sessions
 
+## ⚠️ Demo version limitations
+- **Maximum 10 user requests**
+- **After the limit, you will need your own API key**
+
 ## 🚀 Quick Start
 
 ### Prerequisites
