@@ -64,3 +64,10 @@ htmlcov/
 
 # Документация
 docs/_build/
+
+# Базы данных Chroma
+chroma_db*/
+*.sqlite3
+*.bin
+chroma-collections.parquet
+chroma-embeddings.parquet
