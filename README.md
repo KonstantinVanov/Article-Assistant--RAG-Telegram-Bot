@@ -5,6 +5,7 @@
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 
 **Live Bot**: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
+
 Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexes web content and provides accurate answers with sources.
 
 ![Bot Demo](docs/screenshots/bot_demo.gif)
