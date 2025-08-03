@@ -5,6 +5,8 @@ from Requests import answer
 from indexer import reindex
 import os
 from dotenv import load_dotenv
+import sqlite3
+from datetime import datetime
 
 # Настройка логирования
 logging.basicConfig(
@@ -15,6 +17,55 @@ logger = logging.getLogger(__name__)
 
 # Загрузка переменных окружения
 load_dotenv()
+
+# Инициализация БД для лимитов
+def init_db():
+    conn = sqlite3.connect('user_limits.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY,
+            requests_count INTEGER DEFAULT 0,
+            last_reset_date TEXT,
+            notified BOOLEAN DEFAULT FALSE
+        )
+    ''')
+    conn.commit()
+    return conn
+
+# Проверка лимита запросов
+def check_request_limit(user_id, conn):
+    cursor = conn.cursor()
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    cursor.execute('SELECT requests_count, last_reset_date, notified FROM users WHERE user_id = ?', (user_id,))
+    result = cursor.fetchone()
+    
+    if not result:
+        cursor.execute('INSERT INTO users (user_id, requests_count, last_reset_date) VALUES (?, 1, ?)', 
+                      (user_id, today))
+        conn.commit()
+        return True, 9  # Первый запрос, осталось 9
+    
+    count, last_date, notified = result
+    
+    # Сброс счетчика если новый день
+    if last_date != today:
+        cursor.execute('UPDATE users SET requests_count = 1, last_reset_date = ?, notified = FALSE WHERE user_id = ?',
+                      (today, user_id))
+        conn.commit()
+        return True, 9
+    
+    # Проверка лимита
+    if count >= 10:
+        if not notified:
+            cursor.execute('UPDATE users SET notified = TRUE WHERE user_id = ?', (user_id,))
+            conn.commit()
+        return False, 0
+    
+    cursor.execute('UPDATE users SET requests_count = requests_count + 1 WHERE user_id = ?', (user_id,))
+    conn.commit()
+    return True, 10 - count - 1
 
 # Настройки языков
 LANGUAGES = {
@@ -41,7 +92,16 @@ LANGUAGES = {
         'custom_prompt': "Write new prompt",
         'enter_custom_prompt': "📝 Enter your custom prompt (e.g., 'Answer in technical style'):",
         'prompt_saved': "✅ Custom prompt saved! Now ask your question.",
-        'current_prompt': "Current prompt: {}"
+        'current_prompt': "Current prompt: {}",
+        'limit_warning': "⚠️ You have {remaining} free requests left",
+        'limit_reached': """🚫 Free request limit reached (10/day)
+
+To continue:
+1. Get your OpenAI API key: platform.openai.com
+2. Deploy your own instance:
+   https://github.com/Konstantin-vanov-hub/RAG_bot
+3. Enjoy unlimited access!""",
+        'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/RAG_bot#setup"
     },
     'ru': {
         'welcome': "🌟 *Добро пожаловать в Ассистент Статей!* 🌟\n\nСначала добавьте статью, чтобы получить возможность задавать вопросы",
@@ -66,7 +126,16 @@ LANGUAGES = {
         'custom_prompt': "Написать свой промпт",
         'enter_custom_prompt': "📝 Введите ваш промпт (например, 'Отвечай в техническом стиле'):",
         'prompt_saved': "✅ Промпт сохранён! Теперь задайте вопрос.",
-        'current_prompt': "Текущий промпт: {}"
+        'current_prompt': "Текущий промпт: {}",
+        'limit_warning': "⚠️ У вас осталось {remaining} бесплатных запросов",
+        'limit_reached': """🚫 Достигнут лимит бесплатных запросов (10/день)
+
+Для продолжения:
+1. Получите API-ключ OpenAI: platform.openai.com
+2. Разверните свой экземпляр:
+   https://github.com/Konstantin-vanov-hub/RAG_bot
+3. Используйте без ограничений!""",
+        'setup_guide': "🔧 Инструкция: https://github.com/Konstantin-vanov-hub/RAG_bot#setup"
     }
 }
 
@@ -209,13 +278,11 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             return MAIN_MENU
         
-        # Убрано сообщение с текущим промптом
         await update.message.reply_text(
             LANGUAGES[lang]['ask_prompt'],
             reply_markup=get_cancel_keyboard(lang)
         )
         return ASK_QUESTION
-    
     
     # Обработка кнопки "Enter article"
     if text == LANGUAGES[lang]['article_btn']:
@@ -255,7 +322,6 @@ async def handle_prompt_menu(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return MAIN_MENU
     
-    # Обработка выбора стандартного промпта
     if text == LANGUAGES[lang]['default_prompt']:
         context.user_data['current_prompt'] = DEFAULT_PROMPT[lang]
         await update.message.reply_text(
@@ -264,7 +330,6 @@ async def handle_prompt_menu(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return MAIN_MENU
     
-    # Обработка выбора кастомного промпта
     if text == LANGUAGES[lang]['custom_prompt']:
         await update.message.reply_text(
             LANGUAGES[lang]['enter_custom_prompt'],
@@ -286,7 +351,6 @@ async def handle_custom_prompt(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         return MAIN_MENU
     
-    # Сохраняем промпт
     context.user_data['current_prompt'] = text
     await update.message.reply_text(
         LANGUAGES[lang]['prompt_saved'],
@@ -295,10 +359,11 @@ async def handle_custom_prompt(update: Update, context: ContextTypes.DEFAULT_TYP
     return MAIN_MENU
 
 async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка вопросов с учетом промпта"""
+    """Обработка вопросов с учетом лимитов"""
     lang = context.user_data.get('lang', 'en')
     has_article = context.user_data.get('has_article', False)
     text = update.message.text
+    user_id = update.effective_user.id
     
     if not has_article:
         await update.message.reply_text(
@@ -314,16 +379,32 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return MAIN_MENU
     
+    # Проверка лимитов
+    conn = init_db()
+    allowed, remaining = check_request_limit(user_id, conn)
+    conn.close()
+    
+    if not allowed:
+        await update.message.reply_text(
+            LANGUAGES[lang]['limit_reached'],
+            reply_markup=get_main_menu_keyboard(lang, has_article)
+        )
+        return MAIN_MENU
+    
+    # Предупреждение при малом количестве оставшихся запросов
+    if 0 < remaining <= 3:
+        await update.message.reply_text(
+            LANGUAGES[lang]['limit_warning'].format(remaining=remaining),
+            reply_markup=get_main_menu_keyboard(lang, has_article)
+        )
+    
     await update.message.reply_text(LANGUAGES[lang]['processing'])
     
     try:
-        # Получаем текущий промпт
         current_prompt = context.user_data.get('current_prompt', DEFAULT_PROMPT[lang])
-        
-        # Формируем полный запрос с промптом
         full_query = f"{current_prompt}\n\nQuestion: {text}"
         
-        response = answer(full_query)  # Передаем промпт + вопрос в функцию answer
+        response = answer(full_query)
         await update.message.reply_text(
             response,
             reply_markup=get_main_menu_keyboard(lang, has_article)
@@ -332,6 +413,7 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
             LANGUAGES[lang]['after_answer'],
             reply_markup=get_main_menu_keyboard(lang, has_article)
         )
+        
     except Exception as e:
         error_msg = f"❌ Ошибка: {str(e)}" if lang == 'ru' else f"❌ Error: {str(e)}"
         await update.message.reply_text(
@@ -342,7 +424,7 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return MAIN_MENU
 
 async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка добавления статей с проверкой URL"""
+    """Обработка добавления статей"""
     lang = context.user_data.get('lang', 'en')
     text = update.message.text
     
@@ -353,7 +435,6 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return MAIN_MENU
     
-    # Простая проверка URL
     if not text.startswith(('http://', 'https://')):
         await update.message.reply_text(
             "⚠️ Пожалуйста, введите корректный URL (начинается с http:// или https://)" if lang == 'ru' 
@@ -369,13 +450,10 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(LANGUAGES[lang]['indexing'])
         num_chunks = reindex(text)
         
-        # Устанавливаем флаг наличия статьи
         context.user_data['has_article'] = True
         
-        # Первое сообщение об успешной индексации
         await update.message.reply_text(LANGUAGES[lang]['index_success'])
         
-        # Второе сообщение с количеством чанков
         chunks_message = LANGUAGES[lang]['chunks_info'].format(num_chunks)
         await update.message.reply_text(
             chunks_message,
@@ -402,8 +480,6 @@ async def handle_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if text in lang_map:
         lang = lang_map[text]
         context.user_data['lang'] = lang
-        
-        # При смене языка сбрасываем промпт на дефолтный для нового языка
         context.user_data['current_prompt'] = DEFAULT_PROMPT[lang]
         
         await update.message.reply_text(
@@ -422,6 +498,8 @@ async def handle_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Запуск бота"""
+    init_db()  # Инициализация БД при старте
+    
     TOKEN = os.getenv("TELEGRAM_TOKEN")
     if not TOKEN:
         logger.error("Токен Telegram не найден!")
