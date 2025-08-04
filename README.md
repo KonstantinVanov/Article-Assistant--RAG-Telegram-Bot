@@ -34,7 +34,7 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 
 ### Architecture
 
-![Project Architecture](https://raw.githubusercontent.com/Konstantin-vanov-hub/RAG_bot/main/assets/diagram.png)
+![Project Architecture](https://raw.githubusercontent.com/Konstantin-vanov-hub/RAG_bot/main/assets/diagram.png){: width="50%"}
 
 ### Installation
 ```bash
