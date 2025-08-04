@@ -57,7 +57,7 @@ def check_request_limit(user_id, conn):
         return True, 9
     
     # Проверка лимита
-    if count >= 10:
+    if count >= 3:
         if not notified:
             cursor.execute('UPDATE users SET notified = TRUE WHERE user_id = ?', (user_id,))
             conn.commit()
@@ -65,7 +65,7 @@ def check_request_limit(user_id, conn):
     
     cursor.execute('UPDATE users SET requests_count = requests_count + 1 WHERE user_id = ?', (user_id,))
     conn.commit()
-    return True, 10 - count - 1
+    return True, 3 - count - 1
 
 
 # Настройки языков
@@ -109,7 +109,7 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'prompt_saved': "✅ Custom prompt saved! Now ask your question.",
         'current_prompt': "Current prompt: {}",
         'limit_warning': "⚠️ You have {remaining} free requests left",
-        'limit_reached': """🚫 Free request limit reached (10/day)
+        'limit_reached': """🚫 Free request limit reached (3/day)
 
 To continue:
 1. Get your OpenAI API key: platform.openai.com
@@ -156,7 +156,7 @@ To continue:
         'prompt_saved': "✅ Промпт сохранён! Теперь задайте вопрос.",
         'current_prompt': "Текущий промпт: {}",
         'limit_warning': "⚠️ У вас осталось {remaining} бесплатных запросов",
-        'limit_reached': """🚫 Достигнут лимит бесплатных запросов (10/день)
+        'limit_reached': """🚫 Достигнут лимит бесплатных запросов (3/день)
 
 Для продолжения:
 1. Получите API-ключ OpenAI: platform.openai.com
