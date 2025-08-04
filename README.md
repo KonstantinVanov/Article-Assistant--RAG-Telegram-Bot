@@ -82,17 +82,7 @@ Architecture
 Diagram
 Code
 
-graph TD
-    A[User] --> B[Telegram Bot]
-    B --> C{Request Type}
-    C -->|URL| D[Web Scraper]
-    C -->|Question| E[Vector DB]
-    D --> F[Text Splitter]
-    F --> E
-    E --> G[LLM Processor]
-    G --> H[Response Formatter]
-    H --> B
-
+![Project diagram](assets/diagram.png)
 
 Stack
 Core: Python 3.9, LangChain 0.3+
