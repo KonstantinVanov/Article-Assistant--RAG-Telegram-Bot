@@ -67,10 +67,25 @@ def check_request_limit(user_id, conn):
     conn.commit()
     return True, 10 - count - 1
 
+
 # Настройки языков
 LANGUAGES = {
     'en': {
-        'welcome': "🌟 *Welcome to Article Assistant!* 🌟\n\nPlease add an article first to enable question answering",
+        'welcome': """<b>- Welcome to Article Assistant!</b>
+
+This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on your documents.
+
+<b>- How it works:</b>
+1. Upload a file (PDF/TXT)
+2. Ask questions about the content
+3. Get AI-powered answers
+
+<b>- Take part in our project:</b>
+- <a href="https://github.com/Konstantin-vanov-hub/RAG_bot">GitHub Repository</a>
+- Developer: <a href="https://t.me/Konstantin_vanov">@Konstantin_vanov</a>
+
+<b>Please upload your first document to begin!</b>
+""",
         'ask_btn': "Ask question",
         'article_btn': "Enter article",
         'lang_btn': "Change language",
@@ -104,7 +119,20 @@ To continue:
         'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/RAG_bot#setup"
     },
     'ru': {
-        'welcome': "🌟 *Добро пожаловать в Ассистент Статей!* 🌟\n\nСначала добавьте статью, чтобы получить возможность задавать вопросы",
+        'welcome': """<b>— Добро пожаловать в Article Assistant!</b>
+
+Этот бот использует RAG (Retrieval-Augmented Generation — генерация дополненной реальности) для ответов на вопросы на основе ваших документов.
+
+<b>— Как это работает:</b>
+1. Загрузите файл (PDF/TXT)
+2. Задайте вопросы по содержанию
+3. Получите ответы с помощью ИИ
+
+<b>— Примите участие в нашем проекте:</b>
+— <a href="https://github.com/Konstantin-vanov-hub/RAG_bot">Репозиторий GitHub</a>
+— Разработчик: <a href="https://t.me/Konstantin_vanov">@Konstantin_vanov</a>
+
+<b>Чтобы начать, загрузите свой первый документ!</b>""",
         'ask_btn': "Задать вопрос",
         'article_btn': "Ввести статью",
         'lang_btn': "Изменить язык",
@@ -144,6 +172,7 @@ To continue:
     MAIN_MENU, ENTER_LINK, CHANGE_LANG, 
     ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT
 ) = range(6)
+
 
 # Стандартный промпт
 DEFAULT_PROMPT = {
@@ -241,10 +270,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = context.user_data['lang']
     
     await update.message.reply_text(
-        LANGUAGES[lang]['welcome'],
-        parse_mode='Markdown',
-        reply_markup=get_main_menu_keyboard(lang, has_article=False)
-    )
+    text=LANGUAGES[lang]['welcome'],
+    parse_mode="HTML",
+    reply_markup=get_main_menu_keyboard(lang, has_article=False),
+    disable_web_page_preview=True
+)
     return MAIN_MENU
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
