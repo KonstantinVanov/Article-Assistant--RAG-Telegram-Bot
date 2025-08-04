@@ -22,7 +22,7 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - **Persistent Storage** - Remembers indexed articles between sessions
 
 ## ⚠️ Demo version limitations
-- **Maximum 10 user requests**
+- **Maximum 3 user requests per day**
 - **After the limit, you will need your own API key**
 
 ## 🚀 Quick Start
