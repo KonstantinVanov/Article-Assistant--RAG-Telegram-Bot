@@ -82,7 +82,7 @@ Architecture
 Diagram
 Code
 
-![Project Diagram](./assets/diagram.png)
+![Project Architecture](https://raw.githubusercontent.com/Konstantin-vanov-hub/RAG_bot/main/assets/diagram.png)
 
 Stack
 Core: Python 3.9, LangChain 0.3+
