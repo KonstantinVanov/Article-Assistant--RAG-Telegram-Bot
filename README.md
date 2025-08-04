@@ -32,6 +32,10 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
+### Architecture
+
+![Project Architecture](https://raw.githubusercontent.com/Konstantin-vanov-hub/RAG_bot/main/assets/diagram.png)
+
 ### Installation
 ```bash
 git clone https://github.com/your-username/RAG-bot.git
@@ -81,8 +85,6 @@ Bot: "Answer: A technique that breaks down problems into intermediate reasoning 
 Architecture
 Diagram
 Code
-
-![Project Architecture](https://raw.githubusercontent.com/Konstantin-vanov-hub/RAG_bot/main/assets/diagram.png)
 
 Stack
 Core: Python 3.9, LangChain 0.3+
