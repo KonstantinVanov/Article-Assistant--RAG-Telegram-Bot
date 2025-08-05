@@ -18,55 +18,19 @@ logger = logging.getLogger(__name__)
 # Загрузка переменных окружения
 load_dotenv()
 
-# Инициализация БД для лимитов
+# Инициализация БД
 def init_db():
-    conn = sqlite3.connect('user_limits.db')
+    conn = sqlite3.connect('user_data.db')
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY,
-            requests_count INTEGER DEFAULT 0,
-            last_reset_date TEXT,
-            notified BOOLEAN DEFAULT FALSE
+            current_lang TEXT DEFAULT 'en',
+            custom_prompt TEXT
         )
     ''')
     conn.commit()
     return conn
-
-# Проверка лимита запросов
-def check_request_limit(user_id, conn):
-    cursor = conn.cursor()
-    today = datetime.now().strftime('%Y-%m-%d')
-    
-    cursor.execute('SELECT requests_count, last_reset_date, notified FROM users WHERE user_id = ?', (user_id,))
-    result = cursor.fetchone()
-    
-    if not result:
-        cursor.execute('INSERT INTO users (user_id, requests_count, last_reset_date) VALUES (?, 1, ?)', 
-                      (user_id, today))
-        conn.commit()
-        return True, 9  # Первый запрос, осталось 9
-    
-    count, last_date, notified = result
-    
-    # Сброс счетчика если новый день
-    if last_date != today:
-        cursor.execute('UPDATE users SET requests_count = 1, last_reset_date = ?, notified = FALSE WHERE user_id = ?',
-                      (today, user_id))
-        conn.commit()
-        return True, 9
-    
-    # Проверка лимита
-    if count >= 3:
-        if not notified:
-            cursor.execute('UPDATE users SET notified = TRUE WHERE user_id = ?', (user_id,))
-            conn.commit()
-        return False, 0
-    
-    cursor.execute('UPDATE users SET requests_count = requests_count + 1 WHERE user_id = ?', (user_id,))
-    conn.commit()
-    return True, 3 - count - 1
-
 
 # Настройки языков
 LANGUAGES = {
@@ -108,14 +72,6 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'enter_custom_prompt': "📝 Enter your custom prompt (e.g., 'Answer in technical style'):",
         'prompt_saved': "✅ Custom prompt saved! Now ask your question.",
         'current_prompt': "Current prompt: {}",
-        'limit_warning': "⚠️ You have {remaining} free requests left",
-        'limit_reached': """🚫 Free request limit reached (3/day)
-
-To continue:
-1. Get your OpenAI API key: platform.openai.com
-2. Deploy your own instance:
-   https://github.com/Konstantin-vanov-hub/RAG_bot
-3. Enjoy unlimited access!""",
         'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/RAG_bot#setup"
     },
     'ru': {
@@ -155,14 +111,6 @@ To continue:
         'enter_custom_prompt': "📝 Введите ваш промпт (например, 'Отвечай в техническом стиле'):",
         'prompt_saved': "✅ Промпт сохранён! Теперь задайте вопрос.",
         'current_prompt': "Текущий промпт: {}",
-        'limit_warning': "⚠️ У вас осталось {remaining} бесплатных запросов",
-        'limit_reached': """🚫 Достигнут лимит бесплатных запросов (3/день)
-
-Для продолжения:
-1. Получите API-ключ OpenAI: platform.openai.com
-2. Разверните свой экземпляр:
-   https://github.com/Konstantin-vanov-hub/RAG_bot
-3. Используйте без ограничений!""",
         'setup_guide': "🔧 Инструкция: https://github.com/Konstantin-vanov-hub/RAG_bot#setup"
     }
 }
@@ -172,7 +120,6 @@ To continue:
     MAIN_MENU, ENTER_LINK, CHANGE_LANG, 
     ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT
 ) = range(6)
-
 
 # Стандартный промпт
 DEFAULT_PROMPT = {
@@ -270,11 +217,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = context.user_data['lang']
     
     await update.message.reply_text(
-    text=LANGUAGES[lang]['welcome'],
-    parse_mode="HTML",
-    reply_markup=get_main_menu_keyboard(lang, has_article=False),
-    disable_web_page_preview=True
-)
+        text=LANGUAGES[lang]['welcome'],
+        parse_mode="HTML",
+        reply_markup=get_main_menu_keyboard(lang, has_article=False),
+        disable_web_page_preview=True
+    )
     return MAIN_MENU
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -389,11 +336,10 @@ async def handle_custom_prompt(update: Update, context: ContextTypes.DEFAULT_TYP
     return MAIN_MENU
 
 async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработка вопросов с учетом лимитов"""
+    """Обработка вопросов"""
     lang = context.user_data.get('lang', 'en')
     has_article = context.user_data.get('has_article', False)
     text = update.message.text
-    user_id = update.effective_user.id
     
     if not has_article:
         await update.message.reply_text(
@@ -408,25 +354,6 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=get_main_menu_keyboard(lang, has_article)
         )
         return MAIN_MENU
-    
-    # Проверка лимитов
-    conn = init_db()
-    allowed, remaining = check_request_limit(user_id, conn)
-    conn.close()
-    
-    if not allowed:
-        await update.message.reply_text(
-            LANGUAGES[lang]['limit_reached'],
-            reply_markup=get_main_menu_keyboard(lang, has_article)
-        )
-        return MAIN_MENU
-    
-    # Предупреждение при малом количестве оставшихся запросов
-    if 0 < remaining <= 3:
-        await update.message.reply_text(
-            LANGUAGES[lang]['limit_warning'].format(remaining=remaining),
-            reply_markup=get_main_menu_keyboard(lang, has_article)
-        )
     
     await update.message.reply_text(LANGUAGES[lang]['processing'])
     
