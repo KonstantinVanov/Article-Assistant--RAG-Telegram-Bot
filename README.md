@@ -32,16 +32,20 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
-### Architecture
+# RAG System Workflow
 
-┌─────────────┐    ┌─────────────────┐    ┌─────────────┐
-│   User      │ →  │   Retriever     │ →  │    LLM      │
-│  (Query)    │    │ (Vector DB)     │    │ (Generator) │
-└─────────────┘    └─────────────────┘    └─────────────┘
-                       ↑                        ↓
-                   ┌───────┐              ┌─────────────┐
-                   │ Docs  │              │   Answer    │
-                   └───────┘              └─────────────┘
+1. **Input Query**  
+   - User submits a question.
+
+2. **Retrieval Phase**  
+   - Query → Vectorization → Search in Knowledge Base → Top-N relevant chunks.
+
+3. **Generation Phase**  
+   - Retrieved context + Query → LLM → Generated answer.
+
+4. **Output**  
+   - Answer with citations (optional).
+
 
 ### Installation
 ```bash
