@@ -33,9 +33,7 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
 ### RAG System Workflow
-
-1. **Input Query**  
-
+ 
 ![alt text](image.png)
 
 
