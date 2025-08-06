@@ -32,6 +32,45 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
+Architecture
+┌───────────────────────────────────────────────────────┐
+│               RAG SYSTEM WORKFLOW                     │
+└───────────────────────────────────────────────────────┘
+
+1. INPUT QUERY
+   User submits a text query (e.g., question)
+
+2. RETRIEVAL PHASE
+   ├─ Query vectorization
+   ├─ Knowledge base search:
+   │  ┌─────────────────────┐
+   │  │ Vectorized          │
+   │  │ Document Database   ├───> Retrieves N most relevant
+   │  │ (pre-loaded         │     documents/passages
+   │  │ documents)          │
+   │  └─────────────────────┘
+
+3. GENERATION PHASE
+   ├─ Combines:
+   │  - Original query
+   │  - Retrieved documents
+   ├─ Processes with LLM:
+   └─ Generates final response:
+      ┌─────────────────────┐
+      │ Context + Query     │───> Produces comprehensive
+      │                     │     natural language answer
+      └─────────────────────┘
+
+4. OUTPUT
+   User receives response combining:
+   - Retrieved knowledge
+   - LLM's reasoning capabilities
+
+Key Features:
+• No LLM fine-tuning required
+• Up-to-date (documents can be refreshed)
+• Transparent (source citations possible)
+
 ### Installation
 ```bash
 git clone https://github.com/Konstantin-vanov-hub/RAG-bot.git
