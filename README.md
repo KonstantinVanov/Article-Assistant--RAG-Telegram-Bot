@@ -32,7 +32,7 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
-# RAG System Workflow
+### RAG System Workflow
 
 1. **Input Query**  
    - User submits a question.
