@@ -35,16 +35,8 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 ### RAG System Workflow
 
 1. **Input Query**  
-   - User submits a question.
 
-2. **Retrieval Phase**  
-   - Query → Vectorization → Search in Knowledge Base → Top-N relevant chunks.
-
-3. **Generation Phase**  
-   - Retrieved context + Query → LLM → Generated answer.
-
-4. **Output**  
-   - Answer with citations (optional).
+![alt text](image.png)
 
 
 ### Installation
