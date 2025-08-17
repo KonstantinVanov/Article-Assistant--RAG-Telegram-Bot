@@ -34,15 +34,34 @@ embeddings = OpenAIEmbeddings(
 
 # Prompt template for answer generation
 prompt_template = ChatPromptTemplate.from_template(
-    """You are a helpful assistant answering questions about an article. 
-Use only the provided context to answer. If the answer isn't in the context, 
-politely say you don't know.
+    """Expert Research Assistant Guidelines:
+
+1. Source Accuracy:
+   - Strictly use ONLY the provided context
+   - For missing info: "The article doesn't specify"
+   - Never hallucinate facts
+
+2. Response Structure:
+   - Core Answer (1 bolded sentence)
+   - Key Evidence (3-5 bullet points max)
+   - Practical Implications (when relevant)
+   - Limitations (if data is incomplete)
+
+3. Technical Content:
+   - Code: ```python\n...\n``` 
+   - Formulas: $E=mc^2$ format
+   - Terms: "API (Application Programming Interface)"
+
+4. Language Rules:
+   - Match question's language
+   - Auto-correct grammar subtly
+   - Use ISO standards for dates/units
 
 Context:
 {context}
 
-Question: {question}
-"""
+Question: {question}"""
+
 )
 
 # Initialize language model
