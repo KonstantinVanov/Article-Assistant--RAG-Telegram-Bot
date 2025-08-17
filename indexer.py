@@ -1,31 +1,64 @@
 import os
 import logging
 import bs4
-from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-def reindex(link: str) -> int:
+def _clean_html(content: str) -> str:
+    """Remove unnecessary HTML tags and scripts while preserving main content."""
+    soup = bs4.BeautifulSoup(content, "html.parser")
+    
+    # Remove unwanted elements (adjust as needed)
+    for element in soup(["script", "style", "nav", "footer", "iframe", "aside"]):
+        element.decompose()
+    
+    # Get text from remaining elements
+    return soup.get_text(separator="\n", strip=True)
+
+def reindex(source: str) -> int:
     try:
-        # Configure parser
-        strainer = bs4.SoupStrainer(class_={"post-title", "post-header", "post-content"})
-        
-        # Load document
-        logger.info(f"📥 Loading article: {link}")
-        loader = WebBaseLoader(
-            web_paths=(link,),
-            bs_kwargs={"parse_only": strainer}
-        )
-        docs = loader.load()
+        # Determine if source is URL or file path
+        if source.startswith(('http://', 'https://')):
+            # Universal web article processing
+            logger.info(f"📥 Loading article: {source}")
+            
+            # Load with headers to mimic browser request
+            loader = WebBaseLoader(
+                web_paths=(source,),
+                requests_kwargs={
+                    "headers": {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+                    }
+                }
+            )
+            
+            docs = loader.load()
+            
+            # Clean HTML content for better processing
+            if docs:
+                docs[0].page_content = _clean_html(docs[0].page_content)
+        else:
+            # PDF file processing (unchanged)
+            if not os.path.exists(source):
+                raise FileNotFoundError(f"File not found: {source}")
+            
+            if not source.lower().endswith('.pdf'):
+                raise ValueError("Only PDF files are supported")
+                
+            logger.info(f"📥 Loading PDF file: {source}")
+            loader = PyPDFLoader(source)
+            docs = loader.load()
         
         if not docs or not docs[0].page_content.strip():
-            raise ValueError("No content found in the article")
+            raise ValueError("No content found in the document")
         
         # Split text
         logger.info("✂️ Splitting document...")
@@ -56,19 +89,3 @@ def reindex(link: str) -> int:
     except Exception as e:
         logger.error(f"Indexing failed: {str(e)}")
         raise RuntimeError(f"Indexing failed: {str(e)}")
-
-if __name__ == "__main__":
-    import sys
-    logging.basicConfig(level=logging.INFO)
-    
-    if len(sys.argv) > 1:
-        url = sys.argv[1]
-    else:
-        url = "https://lilianweng.github.io/posts/2024-11-28-reward-hacking/"
-    
-    try:
-        num_chunks = reindex(url)
-        print(f"🎉 Article successfully indexed! Processed chunks: {num_chunks}")
-    except Exception as e:
-        print(f"❌ Indexing error: {str(e)}")
-        sys.exit(1)
