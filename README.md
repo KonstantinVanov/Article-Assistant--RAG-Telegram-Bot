@@ -10,41 +10,45 @@
 
 Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexes web content and provides accurate answers with sources.
 
-![Bot Demo](docs/screenshots/bot_demo.gif)
 
-## 🌟 Features
+## 🌟 Features 
+- **Smart Indexing** - Processes articles from any URL or uploaded PDFs
 
-- **Smart Indexing** - Processes articles from any URL
-- **Multilingual** - Supports English/Russian questions and answers
+- **Multilingual Support** - Handles English/Russian content and questions
+
+- **Document Summarization** - New "Summary" feature extracts key points
+
 - **Custom Prompts** - Control response style and format
-- **Proxy Support** - Works with OpenAI API in restricted regions
-- **Source Citing** - Always shows evidence for answers
-- **Persistent Storage** - Remembers indexed articles between sessions
 
-## ⚠️ Demo version limitations
+- **Proxy Support** - Works with OpenAI API in restricted regions
+
+- **Source Citing** - Always shows evidence for answers
+
+
+## ⚠️ Demo Version Limitations
 - **Maximum 3 user requests per day**
-- **After the limit, you will need your own API key**
+
+- **After the limit, you'll need your own API key**
 
 ## 🚀 Quick Start
-
 ### Prerequisites
 - Python 3.9+
+
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
+
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
 ### RAG System Workflow
  
 ![alt text](image.png)
 
-
 ### Installation
-```bash
+``` bash
 git clone https://github.com/Konstantin-vanov-hub/RAG_bot.git
 cd RAG_bot
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
-pip install python-dotenv==1.1.1
 pip install -r requirements.txt
 Configuration
 Create .env file:
@@ -60,35 +64,50 @@ OPENAI_API_KEY=your_openai_key
 PROXY_API_URL=https://api.proxyapi.ru/openai/v1
 Launch
 bash
-python RAG_bot.py
+python bot.py
+
 🎮 Usage Guide
 Basic Flow
 Start bot with /start
 
-Add article via "Enter article" button
+Add article via "Enter article" button (URL or PDF)
 
 Ask questions using "Ask question" option
+
+Get summaries with "Summary" button
+
+New Summary Feature
+The bot can now generate concise 3-5 point summaries of indexed content:
+
+Extracts key arguments and findings
+
+Highlights practical applications
+
+Presents information in bullet-point format
+
+Works in both English and Russian
 
 Command Reference
 Action	Command	Description
 Start	/start	Initialize bot
-Add Article	"Enter article"	Index new content
-Ask Question	"Ask question"	Get answers
+Add Content	"Enter article"	Index new content (URL/PDF)
+Ask Question	"Ask question"	Get answers about content
+Get Summary	"Summary"	Generate document summary
 Change Language	"Change language"	Switch EN/RU
-Prompt Settings	"Prompt settings"	Customize responses
-Examples
-User: https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/
-Bot: "✅ Article indexed! Processed 15 chunks"
-
-User: "What is chain-of-thought prompting?"
-Bot: "Answer: A technique that breaks down problems into intermediate reasoning steps...\n\n- Improves complex reasoning by 23%\n- Works best with models >50B parameters\n- Different from standard few-shot learning"
-
+Prompt Settings	"Prompt settings"	Customize response style
 ⚙️ Technical Details
 Architecture
-Diagram
-Code
+The bot follows a RAG (Retrieval-Augmented Generation) architecture:
 
-Stack
+Content is indexed and split into chunks
+
+Chunks are converted to embeddings using OpenAI
+
+Questions are matched against stored embeddings
+
+Relevant context is fed to GPT-4 for answer generation
+
+Tech Stack
 Core: Python 3.9, LangChain 0.3+
 
 Vector DB: FAISS
@@ -124,4 +143,3 @@ Open Pull Request
 
 📬 Support
 For assistance, please open an issue or contact @Konstantin_vanov
-
