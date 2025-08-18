@@ -40,7 +40,7 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 
 ### RAG System Workflow
  
-![alt text](scheme.png)
+![alt text](images/scheme.png)
 
 ### Installation
 ``` bash
