@@ -1,19 +1,19 @@
-from telegram import Update, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import (
-    ApplicationBuilder, CommandHandler, MessageHandler, 
-    filters, ContextTypes, ConversationHandler, CallbackQueryHandler
-)
+from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
+from telegram.ext import ContextTypes
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from RAG_bot.config import (
-    LANGUAGES, DEFAULT_PROMPT, MAIN_MENU, ENTER_LINK, CHANGE_LANG,
-    ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC,
+from bot_utils import (
+    get_main_menu_keyboard, get_prompt_menu_keyboard, 
+    get_lang_menu_keyboard, get_cancel_keyboard
+)
+from bot_config import (
+    LANGUAGES, DEFAULT_PROMPT, MAIN_MENU,ENTER_CUSTOM_PROMPT,
+    ENTER_LINK, ASK_QUESTION,CHANGE_LANG,PROMPT_MENU,
     init_db, logger
 )
 from Requests import answer
 from indexer import reindex
 import os
-import sqlite3
 import logging
 
 # Initialize logging
@@ -22,33 +22,6 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
-
-# Keyboard functions
-def get_main_menu_keyboard(lang: str, has_article: bool = False):
-    buttons = []
-    if has_article:
-        buttons.append([KeyboardButton(LANGUAGES[lang]['ask_btn'])])
-        buttons.append([KeyboardButton(LANGUAGES[lang]['summarize_btn'])])
-    buttons.extend([
-        [KeyboardButton(LANGUAGES[lang]['article_btn'])],
-        [KeyboardButton(LANGUAGES[lang]['lang_btn']), KeyboardButton(LANGUAGES[lang]['prompt_btn'])]
-    ])
-    return ReplyKeyboardMarkup(buttons, resize_keyboard=True)
-
-def get_prompt_menu_keyboard(lang: str):
-    return ReplyKeyboardMarkup([
-        [KeyboardButton(LANGUAGES[lang]['default_prompt'])],
-        [KeyboardButton(LANGUAGES[lang]['custom_prompt'])],
-        [KeyboardButton(LANGUAGES[lang]['cancel'])]
-    ], resize_keyboard=True)
-
-def get_lang_menu_keyboard():
-    return ReplyKeyboardMarkup([
-        [KeyboardButton("English 🇬🇧"), KeyboardButton("Русский 🇷🇺")]
-    ], resize_keyboard=True)
-
-def get_cancel_keyboard(lang: str):
-    return ReplyKeyboardMarkup([[KeyboardButton(LANGUAGES[lang]['cancel'])]], resize_keyboard=True)
 
 # Handlers
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -361,56 +334,3 @@ async def handle_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     
     return MAIN_MENU
-
-def main():
-    # Initialize database
-    init_db()
-    logger.info("Database initialized")
-    
-    TOKEN = os.getenv("TELEGRAM_TOKEN")
-    if not TOKEN:
-        logger.error("Telegram token not found!")
-        raise RuntimeError("Telegram token is missing")
-    
-    application = ApplicationBuilder().token(TOKEN).build()
-    
-    # Setup conversation handler
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
-        states={
-            MAIN_MENU: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, main_menu),
-            ],
-            ASK_QUESTION: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_question)
-            ],
-            ENTER_LINK: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_link),
-                MessageHandler(filters.Document.ALL, handle_link)
-            ],
-            CHANGE_LANG: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_language)
-            ],
-            PROMPT_MENU: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_prompt_menu)
-            ],
-            ENTER_CUSTOM_PROMPT: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_custom_prompt)
-            ],
-            SUMMARIZE_DOC: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_summarize)
-            ]
-        },
-        fallbacks=[CommandHandler('start', start)],
-        allow_reentry=True
-    )
-    
-    # Add handlers
-    application.add_handler(conv_handler)
-    
-    # Start bot
-    logger.info("Starting bot...")
-    application.run_polling()
-
-if __name__ == '__main__':
-    main()
