@@ -10,7 +10,7 @@
 
 Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexes web content and provides accurate answers with sources.
 
-![alt text](images/answer1)
+![alt text](images/answer1.jpg)
 
 
 ## 🌟 Features 
