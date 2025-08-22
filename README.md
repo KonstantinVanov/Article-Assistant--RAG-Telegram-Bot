@@ -61,7 +61,7 @@ ini
 TELEGRAM_TOKEN=your_bot_token
 OPENAI_API_KEY=your_openai_key
 # Optional for Russia:
-PROXY_API_URL=https://api.proxyapi.ru/openai/v1
+PROXY_API_URL=https://proxyapi.ru/
 Launch
 bash
 python bot.py
