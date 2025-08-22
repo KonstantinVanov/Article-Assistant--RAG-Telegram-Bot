@@ -22,7 +22,15 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main():
-    # Initialize database
+    from bot_config import init_db
+    init_db()
+    logger.info("Database initialized")
+    
+    # Cleanup temp files on startup
+    from bot_utils import cleanup_temp_files
+    cleanup_temp_files()
+    logger.info("Temp files cleaned up")
+
     from bot_config import init_db
     init_db()
     logger.info("Database initialized")
