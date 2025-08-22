@@ -20,6 +20,17 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 
 ![Answer](images/answer1.jpg)
 
+## 🚀 Quick Demo
+
+Try the live demo bot: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
+
+**Demo Limitations:**
+- 3 requests per day
+- URL processing only
+- No file uploads
+
+**For full features:** Deploy your own instance!
+
 ## 🌟 Features 
 ### Available in Demo Version:
 - **Web Article Processing** - Index content from URLs
