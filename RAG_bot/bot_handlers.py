@@ -154,67 +154,138 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = context.user_data.get('lang', 'en')
+    has_article = context.user_data.get('has_article', False)
+    
+    # Safe key access with fallbacks
+    def get_text(key, default):
+        return LANGUAGES[lang].get(key, LANGUAGES['en'].get(key, default))
     
     # Обработка отмены
-    if update.message.text == LANGUAGES[lang]['cancel']:
+    if update.message.text and update.message.text == get_text('cancel', 'Cancel'):
         await update.message.reply_text(
-            "Отменено" if lang == 'ru' else "Canceled",
-            reply_markup=get_main_menu_keyboard(lang, context.user_data.get('has_article', False))
+            get_text('cancel', 'Canceled'),
+            reply_markup=get_main_menu_keyboard(lang, has_article)
         )
         return MAIN_MENU
     
-    # Обработка текстовых ссылок
-    if update.message.text:
-        text = update.message.text
-        if not text.startswith(('http://', 'https://')):
-            await update.message.reply_text(
-                "⚠️ Пожалуйста, введите корректный URL" if lang == 'ru' else "⚠️ Please enter a valid URL",
-                reply_markup=get_cancel_keyboard(lang)
-            )
-            return ENTER_LINK
-        
-    # Обработка документов (PDF/TXT)
-    elif update.message.document:
-        file = await update.message.document.get_file()
-        ext = update.message.document.file_name.split('.')[-1].lower()
-        if ext not in ['pdf', 'txt']:
-            await update.message.reply_text(
-                "⚠️ Поддерживаются только PDF и TXT файлы" if lang == 'ru' else "⚠️ Only PDF and TXT files are supported",
-                reply_markup=get_cancel_keyboard(lang)
-            )
-            return ENTER_LINK
-        
-        # Скачиваем файл
-        file_path = f"temp_{update.update_id}.{ext}"
-        await file.download_to_drive(file_path)
-        text = file_path  # Используем путь к файлу для индексации
+    file_path = None
+    source_type = None
     
     try:
-        await update.message.reply_text(LANGUAGES[lang]['indexing'])
+        # Обработка текстовых ссылок
+        if update.message.text:
+            text = update.message.text.strip()
+            
+            if text == get_text('cancel', 'Cancel'):
+                await update.message.reply_text(
+                    get_text('cancel', 'Canceled'),
+                    reply_markup=get_main_menu_keyboard(lang, has_article)
+                )
+                return MAIN_MENU
+            
+            if not text.startswith(('http://', 'https://')):
+                await update.message.reply_text(
+                    get_text('invalid_url', 'Please enter a valid URL'),
+                    reply_markup=get_cancel_keyboard(lang)
+                )
+                return ENTER_LINK
+            
+            source = text
+            source_type = 'url'
+        
+        # Обработка документов (PDF/TXT)
+        elif update.message.document:
+            document = update.message.document
+            file_name = document.file_name
+            file_size = document.file_size
+            
+            # Проверка размера файла (макс. 10MB)
+            MAX_FILE_SIZE = 10 * 1024 * 1024
+            if file_size > MAX_FILE_SIZE:
+                await update.message.reply_text(
+                    get_text('file_too_large', 'File too large'),
+                    reply_markup=get_cancel_keyboard(lang)
+                )
+                return ENTER_LINK
+            
+            # Проверка расширения файла
+            ext = file_name.split('.')[-1].lower() if '.' in file_name else ''
+            if ext not in ['pdf', 'txt']:
+                await update.message.reply_text(
+                    get_text('unsupported_format', 'Unsupported format'),
+                    reply_markup=get_cancel_keyboard(lang)
+                )
+                return ENTER_LINK
+            
+            # Скачиваем файл
+            await update.message.reply_text(
+                get_text('file_uploaded', 'File uploaded')
+            )
+            
+            file = await document.get_file()
+            file_path = f"temp_{update.update_id}_{file_name}"
+            await file.download_to_drive(file_path)
+            
+            source = file_path
+            source_type = 'file'
+        
+        else:
+            # Неподдерживаемый тип сообщения
+            await update.message.reply_text(
+                get_text('invalid_input', 'Invalid input'),
+                reply_markup=get_cancel_keyboard(lang)
+            )
+            return ENTER_LINK
+        
+        # Начинаем индексацию
+        await update.message.reply_text(
+            get_text('indexing', 'Indexing'),
+            reply_markup=get_cancel_keyboard(lang)
+        )
         
         # Индексируем контент
-        num_chunks = reindex(text)
+        num_chunks = reindex(source)
         
+        # Обновляем состояние пользователя
         context.user_data['has_article'] = True
+        context.user_data['last_source_type'] = source_type
+        context.user_data['last_source'] = source if source_type == 'url' else file_name
         
-        await update.message.reply_text(LANGUAGES[lang]['index_success'])
+        # Успешная индексация
+        await update.message.reply_text(get_text('index_success', 'Indexed successfully'))
         
-        chunks_message = LANGUAGES[lang]['chunks_info'].format(num_chunks)
+        # Информация о чанках
+        chunks_message = get_text('chunks_info', 'Processed {} chunks').format(num_chunks)
+        
+        if source_type == 'file':
+            file_processed = get_text('file_processed', 'File processed')
+            chunks_message += f"\n📄 {file_processed}: {file_name}"
+        else:
+            url_processed = get_text('url_processed', 'URL processed')
+            chunks_message += f"\n🌐 {url_processed}"
+        
         await update.message.reply_text(
             chunks_message,
-            reply_markup=get_main_menu_keyboard(lang, has_article=True)
+            reply_markup=get_main_menu_keyboard(lang, has_article=True),
+            parse_mode="Markdown"
         )
         
     except Exception as e:
-        error_msg = f"❌ Ошибка: {str(e)}" if lang == 'ru' else f"❌ Error: {str(e)}"
+        logger.error(f"Indexing error: {str(e)}")
+        error_msg = get_text('error', 'Error occurred')
         await update.message.reply_text(
-            error_msg,
+            f"{error_msg}: {str(e)}",
             reply_markup=get_main_menu_keyboard(lang, False)
         )
+        
     finally:
         # Удаляем временный файл, если был загружен
-        if update.message.document and os.path.exists(text):
-            os.remove(text)
+        if file_path and os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                logger.info(f"Removed temporary file: {file_path}")
+            except Exception as e:
+                logger.error(f"Error removing temp file {file_path}: {str(e)}")
     
     return MAIN_MENU
 
