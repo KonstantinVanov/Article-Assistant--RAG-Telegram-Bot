@@ -43,7 +43,7 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 ![alt text](images/scheme.png)
 
 ### Installation
-bash
+``` bash
 git clone https://github.com/Konstantin-vanov-hub/RAG_bot.git
 cd RAG_bot
 python -m venv venv
