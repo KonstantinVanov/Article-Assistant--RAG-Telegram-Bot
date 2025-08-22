@@ -77,7 +77,23 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'enter_custom_prompt': "📝 Enter your custom prompt (e.g., 'Answer in technical style'):",
         'prompt_saved': "✅ Custom prompt saved! Now ask your question.",
         'current_prompt': "Current prompt: {}",
-        'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/RAG_bot#setup"
+        'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/RAG_bot#setup",
+        
+        # NEW KEYS ADDED:
+        'invalid_url': "⚠️ Please enter a valid URL starting with http:// or https://",
+        'file_too_large': "⚠️ File is too large (max 10MB). Please upload a smaller file.",
+        'file_empty': "⚠️ The file is empty. Please upload a valid file with content.",
+        'unsupported_format': "⚠️ Unsupported file format. Please upload PDF or TXT files only.",
+        'file_uploaded': "📥 File uploaded successfully! Processing...",
+        'file_processed': "File processed",
+        'url_processed': "URL processed successfully",
+        'file_not_found': "❌ File not found. Please try uploading again.",
+        'no_content_found': "❌ No readable content found in the document. Please try another file.",
+        'connection_error': "❌ Connection error. Please check your internet connection and try again.",
+        'api_key_error': "❌ System error: API key configuration issue. Please contact administrator.",
+        'processing_file': "🔍 Processing your file...",
+        'document_too_large': "⚠️ Document is too large. Processing in parts...",
+        'max_size_exceeded': "❌ Document exceeds maximum processing size. Please use a smaller document."
     },
     'ru': {
         'welcome': """<b>— Добро пожаловать в Article Assistant!</b>
@@ -120,7 +136,23 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'enter_custom_prompt': "📝 Введите ваш промпт (например, 'Отвечай в техническом стиле'):",
         'prompt_saved': "✅ Промпт сохранён! Теперь задайте вопрос.",
         'current_prompt': "Текущий промпт: {}",
-        'setup_guide': "🔧 Инструкция: https://github.com/Konstantin-vanov-hub/RAG_bot#setup"
+        'setup_guide': "🔧 Инструкция: https://github.com/Konstantin-vanov-hub/RAG_bot#setup",
+        
+        # NEW KEYS ADDED:
+        'invalid_url': "⚠️ Пожалуйста, введите корректный URL, начинающийся с http:// или https://",
+        'file_too_large': "⚠️ Файл слишком большой (макс. 10MB). Загрузите файл меньшего размера.",
+        'file_empty': "⚠️ Файл пустой. Загрузите validный файл с содержимым.",
+        'unsupported_format': "⚠️ Неподдерживаемый формат файла. Загружайте только PDF или TXT файлы.",
+        'file_uploaded': "📥 Файл успешно загружен! Обрабатываю...",
+        'file_processed': "Файл обработан",
+        'url_processed': "URL успешно обработан",
+        'file_not_found': "❌ Файл не найден. Попробуйте загрузить снова.",
+        'no_content_found': "❌ В документе не найдено читаемого содержимого. Попробуйте другой файл.",
+        'connection_error': "❌ Ошибка соединения. Проверьте интернет-соединение и попробуйте снова.",
+        'api_key_error': "❌ Системная ошибка: проблема с API ключом. Свяжитесь с администратором.",
+        'processing_file': "🔍 Обрабатываю ваш файл...",
+        'document_too_large': "⚠️ Документ слишком большой. Обрабатываю по частям...",
+        'max_size_exceeded': "❌ Документ превышает максимальный размер обработки. Используйте документ меньшего размера."
     }
 }
 
