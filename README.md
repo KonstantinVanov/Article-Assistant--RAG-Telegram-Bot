@@ -1,9 +1,16 @@
 # Article Assistant (RAG Telegram Bot) 
 
-![Python Version](https://img.shields.io/badge/python-3.9+-blue)
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Telegram Bot](https://img.shields.io/badge/Telegram-Bot-blue.svg)](https://core.telegram.org/bots)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-purple.svg)](https://openai.com/)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 ![PDF Support](https://img.shields.io/badge/feature-PDF%20Support-red)
+
+[![Last Commit](https://img.shields.io/github/last-commit/Konstantin-vanov-hub/RAG_bot)](https://github.com/Konstantin-vanov-hub/RAG_bot/commits/main)
+[![Issues](https://img.shields.io/github/issues/Konstantin-vanov-hub/RAG_bot)](https://github.com/Konstantin-vanov-hub/RAG_bot/issues)
+[![Stars](https://img.shields.io/github/stars/Konstantin-vanov-hub/RAG_bot)](https://github.com/Konstantin-vanov-hub/RAG_bot/stargazers)
 
 **Live Bot**: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
