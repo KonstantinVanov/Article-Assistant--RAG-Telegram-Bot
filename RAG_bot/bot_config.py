@@ -46,7 +46,7 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
 3. Get AI-powered answers
 
 <b>- Take part in our project:</b>
-- <a href="https://github.com/Konstantin-vanov-hub/RAG_bot">GitHub Repository</a>
+- <a href="https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot">GitHub Repository</a>
 - Developer: <a href="https://t.me/Konstantin_vanov">@Konstantin_vanov</a>
 
 <b>Please upload your first document to begin!</b>
@@ -77,7 +77,7 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'enter_custom_prompt': "📝 Enter your custom prompt (e.g., 'Answer in technical style'):",
         'prompt_saved': "✅ Custom prompt saved! Now ask your question.",
         'current_prompt': "Current prompt: {}",
-        'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/RAG_bot#setup",
+        'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot#setup",
         
         # NEW KEYS ADDED:
         'invalid_url': "⚠️ Please enter a valid URL starting with http:// or https://",
@@ -106,7 +106,7 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
 3. Получите ответы с помощью ИИ
 
 <b>— Примите участие в нашем проекте:</b>
-— <a href="https://github.com/Konstantin-vanov-hub/RAG_bot">Репозиторий GitHub</a>
+— <a href="https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot">Репозиторий GitHub</a>
 — Разработчик: <a href="https://t.me/Konstantin_vanov">@Konstantin_vanov</a>
 
 <b>Чтобы начать, загрузите свой первый документ!</b>""",
@@ -136,7 +136,7 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'enter_custom_prompt': "📝 Введите ваш промпт (например, 'Отвечай в техническом стиле'):",
         'prompt_saved': "✅ Промпт сохранён! Теперь задайте вопрос.",
         'current_prompt': "Текущий промпт: {}",
-        'setup_guide': "🔧 Инструкция: https://github.com/Konstantin-vanov-hub/RAG_bot#setup",
+        'setup_guide': "🔧 Инструкция: https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot#setup",
         
         # NEW KEYS ADDED:
         'invalid_url': "⚠️ Пожалуйста, введите корректный URL, начинающийся с http:// или https://",
