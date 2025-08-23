@@ -1,4 +1,4 @@
-RAG_bot_project/
+Article-Assistant--RAG-Telegram-Bot/
 ├── 📂 chroma_db/                 # Chroma vector database storage
 ├── 📂 chroma_db_new/             # New Chroma database version
 ├── 📂 faiss_index/               # FAISS vector index storage
