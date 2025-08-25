@@ -4,7 +4,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Telegram Bot](https://img.shields.io/badge/Telegram-Bot-blue.svg)](https://core.telegram.org/bots)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-purple.svg)](https://openai.com/)
-![License](https://img.shields.io/badge/license-MIT-green)
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 ![PDF Support](https://img.shields.io/badge/feature-PDF%20Support-red)
 
