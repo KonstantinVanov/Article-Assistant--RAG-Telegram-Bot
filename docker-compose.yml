@@ -1,0 +1,24 @@
+services:
+  telegram-bot:
+    build: .
+    container_name: article-assistant-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - qdrant
+    volumes:
+      - .:/app  # Монтируем всю текущую папку в /app
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: article-assistant-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  qdrant_data:
