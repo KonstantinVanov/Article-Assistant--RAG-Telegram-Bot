@@ -14,4 +14,4 @@ COPY *.py *.md .env.example ./
 WORKDIR /app/RAG_bot
 
 # Запускаем бота
-CMD ["python", "RAG_bot/main.py"]
+CMD ["python", "RAG_bot/bot_main.py"]
