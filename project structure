@@ -1,21 +1,31 @@
 Article-Assistant--RAG-Telegram-Bot/
-├── 📂 chroma_db/                 # Chroma vector database storage
-├── 📂 chroma_db_new/             # New Chroma database version
-├── 📂 faiss_index/               # FAISS vector index storage
-├── 📂 images/                    # Images for documentation
-├── 📂 __pycache__/               # Python cache files (ignored)
-├── 📜 .env                       # Environment variables (private)
-├── 📜 .env.example               # Environment template
-├── 📜 .gitignore                 # Git ignore rules
-├── 📜 LICENSE                    # MIT License file
-├── 📜 Link.txt                   # Test URLs/links
-├── 📜 project structure          # Project structure notes
-├── 📜 README.md                  # Project documentation
+├── 📂 .github/                    # GitHub configuration files
+│   ├── 📂 ISSUE_TEMPLATE/         # Issue templates
+│   │   ├── 📜 bug_report.md       # Template for bug reports
+│   │   └── 📜 feature_request.md  # Template for feature requests
+│   └── 📜 pull_request_template.md # PR template
+├── 📂 chroma_db/                  # Chroma vector database storage
+├── 📂 chroma_db_new/              # New Chroma database version
+├── 📂 faiss_index/                # FAISS vector index storage
+├── 📂 images/                     # Images for documentation
+├── 📂 __pycache__/                # Python cache files (ignored)
+├── 📜 .dockerignore               # Docker ignore rules
+├── 📜 .env                        # Environment variables (private)
+├── 📜 .env.example                # Environment template
+├── 📜 .gitignore                  # Git ignore rules
+├── 📜 CODE_OF_CONDUCT.md          # Community code of conduct
+├── 📜 CONTRIBUTING.md             # Contribution guidelines
+├── 📜 Dockerfile                  # Docker container definition
+├── 📜 docker-compose.yml          # Multi-container setup
+├── 📜 LICENSE                     # MIT License file
+├── 📜 Link.txt                    # Test URLs/links
+├── 📜 project structure           # Project structure notes
+├── 📜 README.md                   # Project documentation
 ├── 📂 RAG_bot/
-    ├── 📜 requirements.txt       # Python dependencies
-    ├── 📜 bot_config.py          # Bot configuration & constants
-    ├── 📜 bot_handlers.py        # Telegram bot handlers
-    ├── 📜 bot_main.py            # Main application entry point
-    ├── 📜 bot_utils.py           # Utility functions
-    ├── 📜 indexer.py             # Document indexing logic
-    └── 📜 Requests.py            # OpenAI API requests handler
+│   ├── 📜 requirements.txt        # Python dependencies
+│   ├── 📜 bot_config.py           # Bot configuration & constants
+│   ├── 📜 bot_handlers.py         # Telegram bot handlers
+│   ├── 📜 bot_main.py             # Main application entry point
+│   ├── 📜 bot_utils.py            # Utility functions
+│   ├── 📜 indexer.py              # Document indexing logic
+│   └── 📜 Requests.py
