@@ -1,15 +1,16 @@
-# Article Assistant (RAG Telegram Bot) 
+# Article Assistant (RAG Telegram Bot)
 
 [![Python Version](https://img.shields.io/badge/python-3.9+-blue)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue?logo=docker)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Telegram Bot](https://img.shields.io/badge/Telegram-Bot-blue.svg)](https://core.telegram.org/bots)
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-purple.svg)](https://openai.com/)
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 ![PDF Support](https://img.shields.io/badge/feature-PDF%20Support-red)
 
-[![Last Commit](https://img.shields.io/github/last-commit/Konstantin-vanov-hub/RAG_bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/commits/main)
-[![Issues](https://img.shields.io/github/issues/Konstantin-vanov-hub/RAG_bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/issues)
-[![Stars](https://img.shields.io/github/stars/Konstantin-vanov-hub/RAG_bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/stargazers)
+[![Last Commit](https://img.shields.io/github/last-commit/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/commits/main)
+[![Issues](https://img.shields.io/github/issues/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/issues)
+[![Stars](https://img.shields.io/github/stars/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/stargazers)
 
 **Live Bot**: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
@@ -30,7 +31,7 @@ Try the live demo bot: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
 **For full features:** Deploy your own instance!
 
-## 🌟 Features 
+## 🌟 Features
 ### Available in Demo Version:
 - **Web Article Processing** - Index content from URLs
 - **Multilingual Support** - English/Russian content
@@ -49,147 +50,98 @@ Try the live demo bot: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 - **Basic functionality only** - Limited features
 - **After daily limit** - Requires self-hosting to continue
 
-
 ## 🚀 Quick Start
+
 ### Prerequisites
-- Python 3.9+
+- Python 3.9+ or Docker
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
 ### RAG System Workflow
- 
+
 ![alt text](images/scheme.png)
 
-### Installation
+## 🐳 Docker Deployment (Recommended)
+
+The easiest way to deploy with all dependencies included:
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+## Quick Start with Docker
+
+```bash
+# Clone the repository
+git clone https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot.git
+cd Article-Assistant--RAG-Telegram-Bot
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your Telegram Bot Token and OpenAI API Key
+nano .env
+
+# Build and start the containers
+docker-compose up -d --build
+
+# View logs to verify everything is working
+docker-compose logs -f telegram-bot
+```
+### Docker Commands
+Command	Description
+``` bash
+#Build and start in background
+docker-compose up -d --build
+#remove containers
+docker-compose down	Stop and
+#Follow bot logs
+docker-compose logs -f telegram-bot
+#Restart only the bot
+docker-compose restart telegram-bot	
+```
+### Traditional Installation (Without Docker)
+### Clone and setup
 ``` bash
 git clone https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot
-cd RAG_bot
+cd Article-Assistant--RAG-Telegram-Bot
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 pip install -r requirements.txt
-Configuration
-Create .env file:
-
-bash
+```
+### Configuration
+``` bash
 cp .env.example .env
-Add your credentials:
+```
+### Add your credentials to .env file
 
-ini
-TELEGRAM_TOKEN=your_bot_token
-OPENAI_API_KEY=your_openai_key
-# Optional for restricted regions:
-PROXY_API_URL=https://api.proxyapi.ru/openai/v1
-Launch
-bash
-python bot_main.py
-📄 PDF File Support
-The bot now supports direct PDF file uploads with the following capabilities:
+### Launch
+python RAG_bot/bot_main.py
 
-Supported PDF Features:
-Text Extraction - Extracts text content from PDF documents
+### 🤝 Contributing
+We love contributions! Please read our Contributing Guide to learn how you can help improve this project.
 
-Multi-page Processing - Handles PDFs with multiple pages
-
-Smart Chunking - Splits content into optimal chunks for processing
-
-Large File Handling - Processes files up to 10MB with automatic optimization
-
-How to Use PDF Files:
-Start the bot with /start
-
-Click "Enter article" button
-
-Upload a PDF file directly (max 10MB)
-
-Wait for indexing to complete
-
-Ask questions about the PDF content
-
-PDF Processing Limits:
-Max File Size: 10MB
-
-Supported: Text-based PDFs (not scanned images)
-
-Optimal: 1-50 page documents
-
-🎮 Usage Guide
-Basic Flow
-Start bot with /start
-
-Add article via "Enter article" button (URL or PDF upload)
-
-Ask questions using "Ask question" option
-
-Get summaries with "Summary" button
-
-New Summary Feature
-The bot can now generate concise 3-5 point summaries of indexed content:
-
-Extracts key arguments and findings
-
-Highlights practical applications
-
-Presents information in bullet-point format
-
-Works in both English and Russian
-
-Command Reference
-Action	Command	Description
-Start	/start	Initialize bot
-Add Content	"Enter article"	Index new content (URL/PDF)
-Ask Question	"Ask question"	Get answers about content
-Get Summary	"Summary"	Generate document summary
-Change Language	"Change language"	Switch EN/RU
-Prompt Settings	"Prompt settings"	Customize response style
-⚙️ Technical Details
-Architecture
-The bot follows a RAG (Retrieval-Augmented Generation) architecture:
-
-Content is indexed and split into chunks
-
-Chunks are converted to embeddings using OpenAI
-
-Questions are matched against stored embeddings
-
-Relevant context is fed to GPT-4 for answer generation
-
-Tech Stack
-Core: Python 3.9, LangChain 0.3+
-
-Vector DB: FAISS
-
-Embeddings: OpenAI text-embedding-3-small
-
-LLM: GPT-4
-
-PDF Processing: PyPDF, Text Extraction
-
-Parsing: BeautifulSoup4
-
-Cache: Local FAISS index storage
-
-🛠 Troubleshooting
-Issue	Solution
-API Key Error	Verify .env file exists
-Empty Responses	Check article URL validity
-PDF Not Processing	Ensure PDF contains text (not scanned images)
-Slow Indexing	Reduce chunk_size in indexer.py
-Proxy Errors	Test API endpoint with curl
-Encoding Issues	Set LANG=C.UTF-8 in environment
-📜 License
-MIT License © 2025 Konstantin
-
-🤝 Contributing
+How to Contribute:
 Fork the repository
 
-Create feature branch (git checkout -b feature/improvement)
+Create a feature branch (git checkout -b feature/improvement)
 
-Commit changes (git commit -am 'Add new feature')
+Commit your changes (git commit -am 'Add new feature')
 
-Push to branch (git push origin feature/improvement)
+Push to the branch (git push origin feature/improvement)
 
-Open Pull Request
+Open a Pull Request
 
-📬 Support
-For assistance, please open an issue or contact @Konstantin_vanov
+### 📜 License
+MIT License © 2025 Konstantin. See LICENSE file for details.
+
+### 📬 Support
+For assistance, please:
+
+Check the troubleshooting section
+
+Search existing issues
+
+Open a new issue with detailed information
+
+Contact @Konstantin_vanov on Telegram
