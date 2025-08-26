@@ -21,8 +21,8 @@ Article-Assistant--RAG-Telegram-Bot/
 ├── 📜 Link.txt                    # Test URLs/links
 ├── 📜 project structure           # Project structure notes
 ├── 📜 README.md                   # Project documentation
+├── 📜 requirements.txt            # Python dependencies
 ├── 📂 RAG_bot/
-│   ├── 📜 requirements.txt        # Python dependencies
 │   ├── 📜 bot_config.py           # Bot configuration & constants
 │   ├── 📜 bot_handlers.py         # Telegram bot handlers
 │   ├── 📜 bot_main.py             # Main application entry point
