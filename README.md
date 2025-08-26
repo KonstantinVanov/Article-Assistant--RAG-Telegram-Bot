@@ -10,7 +10,6 @@
 
 [![Last Commit](https://img.shields.io/github/last-commit/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/commits/main)
 [![Issues](https://img.shields.io/github/issues/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/issues)
-[![Stars](https://img.shields.io/github/stars/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/stargazers)
 
 **Live Bot**: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
