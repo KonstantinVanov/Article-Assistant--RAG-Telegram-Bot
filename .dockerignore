@@ -1,28 +1,14 @@
-# Python
+.git/
+.github/
 __pycache__/
 *.pyc
-venv/
-env/
-
-# Data and indexes
+.env
 chroma_db/
 chroma_db_new/
 faiss_index/
 data/
 logs/
-*.db
-
-# Secrets
-.env
-.env.*
-!.env.example
-
-# IDE
 .vscode/
 .idea/
-
-# OS
-.DS_Store
-
-# Git
-.git/
+*.log
+*.tmp
