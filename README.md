@@ -21,6 +21,8 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 Try the live demo bot: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
 **Demo Limitations:**
+At the moment, the demo bot may not work. This will be fixed within a few days and is related to the update of the bot. But the code in the repository is fully functional and creating your bot according to the instructions below will not cause you any problems. But no later than September 1, you will be able to use the demo version again.
+
 - 3 requests per day
 - URL processing only
 - No file uploads
