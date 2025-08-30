@@ -8,9 +8,6 @@
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 ![PDF Support](https://img.shields.io/badge/feature-PDF%20Support-red)
 
-[![Last Commit](https://img.shields.io/github/last-commit/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/commits/main)
-[![Issues](https://img.shields.io/github/issues/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/issues)
-
 **Live Bot**: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
 **My contact**: [@Konstantin_vanov](https://t.me/Konstantin_vanov)
