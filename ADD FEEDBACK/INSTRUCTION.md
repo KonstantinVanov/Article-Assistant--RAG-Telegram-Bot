@@ -5,6 +5,10 @@ Enhance your RAG Telegram bot with a user feedback system that collects 👍/�
 
 ## If you find any error in the instructions or during installation, please be sure to report it. We will try to fix it as soon as possible.
 <a href="https://t.me/Konstantin_vanov">@Konstantin_vanov</a>
+
+## Install 
+To view statistics, install DB Browser for SQLite
+
 ## 📁 Files Modified
 
 ### 1. **Core Configuration** (`bot_config.py`)
