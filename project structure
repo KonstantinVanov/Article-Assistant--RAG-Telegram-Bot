@@ -23,9 +23,16 @@ Article-Assistant--RAG-Telegram-Bot/
 ├── 📜 README.md                     # Project documentation and setup instructions
 ├── 📜 requirements.txt              # Python dependencies list (pip install)
 ├── 📂 RAG_bot/                      # Main application package
-    ├── 📜 bot_config.py             # Bot configuration & constants (settings, defaults)
-    ├── 📜 bot_handlers.py           # Telegram bot handlers (message processing logic)
-    ├── 📜 bot_main.py               # Main application entry point (bot startup)
-    ├── 📜 bot_utils.py              # Utility functions (helpers, common utilities)
-    ├── 📜 indexer.py                # Document indexing logic (text processing, chunking)
-    └── 📜 Requests.py               # OpenAI API requests handler (API communication)
+│   ├── 📜 bot_config.py             # Bot configuration & constants (settings, defaults)
+│   ├── 📜 bot_handlers.py           # Telegram bot handlers (message processing logic)
+│   ├── 📜 bot_main.py               # Main application entry point (bot startup)
+│   ├── 📜 bot_utils.py              # Utility functions (helpers, common utilities)
+│   ├── 📜 indexer.py                # Document indexing logic (text processing, chunking)
+│   └── 📜 Requests.py               # OpenAI API requests handler (API communication)
+├── 📂 ADD FEEDBACK                  # Adding feedback to the bot
+    ├── 📜 INSTRUCTION.md            # Instruction for adding feedback
+    ├── 📜 bot_config.py             # New code
+    ├── 📜 bot_handlers.py           # New code
+    ├── 📜 bot_main.py               # New code
+    ├── 📜 bot_utils.py              # New code
+    ├── 📜 feedback_analyzer.py      # Feedback analysis
