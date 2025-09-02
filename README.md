@@ -56,6 +56,22 @@ If you choose demo bot ,please leave your feedback after receiving the answer. T
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
 
+## 📊 Feedback System
+
+The bot now includes a user feedback system that helps improve the quality of responses:
+
+### 🎯Features
+- **👍👎 Response rating**: users can like or dislike AI responses.
+- **Multilingual**: supports English and Russian interfaces.
+- **Anonymous analytics**: collects feedback while maintaining privacy.
+- **Data export**: downloads feedback in CSV format for analysis.
+
+### 📊 How it works
+1. After each AI response, users see feedback buttons.
+2. Ratings are stored in a SQLite database with timestamps.
+3. Use `feedback_analyzer.py` to view statistics:
+### Installation instructions are in the file ADD FEEDBACK
+
 ### RAG System Workflow
 
 ![alt text](images/scheme.png)
