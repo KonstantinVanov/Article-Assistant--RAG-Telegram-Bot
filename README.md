@@ -23,7 +23,10 @@ Try the live demo bot: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 **Demo Limitations:**
 - 3 requests per day
 - URL processing only
+- Feedback function
 - No file uploads
+
+If you choose demo bot ,please leave your feedback after receiving the answer. This will help in promoting the project!
 
 **For full features:** Deploy your own instance!
 
