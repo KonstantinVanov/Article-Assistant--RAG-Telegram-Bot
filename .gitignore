@@ -71,3 +71,4 @@ chroma_db*/
 *.bin
 chroma-collections.parquet
 chroma-embeddings.parquet
+user_data.db
