@@ -7,8 +7,6 @@
 [![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4-purple.svg)](https://openai.com/)
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 ![PDF Support](https://img.shields.io/badge/feature-PDF%20Support-red)
-![Version](https://img.shields.io/badge/version-0.2.0-blue)
-![Release](https://img.shields.io/github/v/release/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot)
 
 **Live Bot**: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
