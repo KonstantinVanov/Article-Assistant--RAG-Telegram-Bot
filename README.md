@@ -8,7 +8,6 @@
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 ![PDF Support](https://img.shields.io/badge/feature-PDF%20Support-red)
 
-**Live Bot**: [@RAG_Engineering_bot](https://t.me/RAG_Engineering_bot)
 
 **My contact**: [@Konstantin_vanov](https://t.me/Konstantin_vanov)
 
