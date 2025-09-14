@@ -15,18 +15,6 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 
 ![Answer](images/answer1.jpg)
 
-## 🚀 Quick Demo
-
-**Demo Limitations:**
-- 3 requests per day
-- URL processing only
-- Feedback function
-- No file uploads
-
-If you choose demo bot ,please leave your feedback after receiving the answer. This will help in promoting the project!
-
-**For full features:** Deploy your own instance!
-
 ## 🌟 Features
 ### Available in Demo Version:
 - **Web Article Processing** - Index content from URLs
@@ -39,12 +27,6 @@ If you choose demo bot ,please leave your feedback after receiving the answer. T
 - **TXT File Support** - Process text files directly ✅
 - **No Request Limits** - Unlimited questions and processing ✅
 - **Custom Configuration** - Adjust chunk sizes and parameters ✅
-
-## ⚠️ Demo Version Limitations
-- **Maximum 3 requests per day** - Strict rate limiting
-- **No PDF/TXT file support** - URL processing only
-- **Basic functionality only** - Limited features
-- **After daily limit** - Requires self-hosting to continue
 
 ## 🚀 Quick Start
 
