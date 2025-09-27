@@ -4,17 +4,19 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from bot_utils import (
     get_main_menu_keyboard, get_prompt_menu_keyboard, 
-    get_lang_menu_keyboard, get_cancel_keyboard
+    get_lang_menu_keyboard, get_cancel_keyboard, get_feedback_keyboard
 )
 from bot_config import (
     LANGUAGES, DEFAULT_PROMPT, MAIN_MENU,ENTER_CUSTOM_PROMPT,
     ENTER_LINK, ASK_QUESTION,CHANGE_LANG,PROMPT_MENU,
-    init_db, logger
+    init_db, logger, FEEDBACK_BUTTONS, FEEDBACK
 )
 from Requests import answer
 from indexer import reindex
 import os
 import logging
+import sqlite3
+
 
 # Initialize logging
 logging.basicConfig(
@@ -132,16 +134,15 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         response = answer(full_query)
         
-        # Отправляем ответ без кнопок feedback
-        await update.message.reply_text(
-            response,
-            parse_mode="Markdown"
-        )
+        context.user_data['last_response'] = response
         
         await update.message.reply_text(
-            LANGUAGES[lang]['after_answer'],
-            reply_markup=get_main_menu_keyboard(lang, has_article)
+            response,
+            parse_mode="Markdown",
+            reply_markup=get_feedback_keyboard(lang)
         )
+
+        return FEEDBACK
         
     except Exception as e:
         error_msg = f"❌ Ошибка: {str(e)}" if lang == 'ru' else f"❌ Error: {str(e)}"
@@ -149,8 +150,7 @@ async def handle_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
             error_msg,
             reply_markup=get_main_menu_keyboard(lang, has_article)
         )
-    
-    return MAIN_MENU
+        return MAIN_MENU
 
 async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = context.user_data.get('lang', 'en')
@@ -402,6 +402,65 @@ async def handle_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             "Пожалуйста, выберите язык" if current_lang == 'ru' else "Please select language",
             reply_markup=get_lang_menu_keyboard()
+        )
+    
+    return MAIN_MENU
+
+async def handle_feedback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    lang = context.user_data.get('lang', 'en')
+    text = update.message.text
+    has_article = context.user_data.get('has_article', False)
+    
+
+    if text == LANGUAGES[lang]['cancel']:
+        await update.message.reply_text(
+            "Отменено" if lang == 'ru' else "Canceled",
+            reply_markup=get_main_menu_keyboard(lang, has_article)
+        )
+        return MAIN_MENU
+    
+
+    if text not in [FEEDBACK_BUTTONS[lang]['like_btn'], FEEDBACK_BUTTONS[lang]['dislike_btn']]:
+        await update.message.reply_text(
+            LANGUAGES[lang]['invalid_input'],
+            reply_markup=get_feedback_keyboard(lang)
+        )
+        return FEEDBACK
+    
+
+    try:
+        conn = sqlite3.connect('user_data.db')
+        cursor = conn.cursor()
+        
+
+        feedback_type = 'like' if text == FEEDBACK_BUTTONS[lang]['like_btn'] else 'dislike'
+        response_text = context.user_data.get('last_response', '')
+        
+
+        if response_text and len(response_text) > 1000:
+            response_text = response_text[:1000] + "..."
+        
+        cursor.execute(
+            'INSERT INTO feedback (user_id, response_text, feedback_type) VALUES (?, ?, ?)',
+            (user_id, response_text, feedback_type)
+        )
+        conn.commit()
+        conn.close()
+        
+        logger.info(f"Feedback saved: user_id={user_id}, type={feedback_type}")
+        
+        await update.message.reply_text(
+            FEEDBACK_BUTTONS[lang]['feedback_thanks'],
+            reply_markup=get_main_menu_keyboard(lang, has_article)
+        )
+        
+    except Exception as e:
+        logger.error(f"Feedback database error: {str(e)}")
+
+        await update.message.reply_text(
+            FEEDBACK_BUTTONS[lang]['feedback_error'],
+            reply_markup=get_main_menu_keyboard(lang, has_article)
         )
     
     return MAIN_MENU

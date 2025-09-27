@@ -5,11 +5,11 @@ from telegram.ext import (
 )
 from bot_handlers import (
     start, main_menu, handle_question, handle_link, 
-    handle_language, handle_prompt_menu, handle_custom_prompt, handle_summarize
+    handle_language, handle_prompt_menu, handle_custom_prompt, handle_summarize, handle_feedback
 )
 from bot_config import (
     MAIN_MENU, ENTER_LINK, CHANGE_LANG, 
-    ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC
+    ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC, FEEDBACK
 )
 import os
 import logging
@@ -30,10 +30,6 @@ def main():
     from bot_utils import cleanup_temp_files
     cleanup_temp_files()
     logger.info("Temp files cleaned up")
-
-    from bot_config import init_db
-    init_db()
-    logger.info("Database initialized")
     
     TOKEN = os.getenv("TELEGRAM_TOKEN")
     if not TOKEN:
@@ -64,6 +60,9 @@ def main():
             ],
             ENTER_CUSTOM_PROMPT: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_custom_prompt)
+            ],
+            FEEDBACK: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, handle_feedback)
             ],
             SUMMARIZE_DOC: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_summarize)

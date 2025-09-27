@@ -1,9 +1,11 @@
 from telegram import ReplyKeyboardMarkup, KeyboardButton
-from bot_config import LANGUAGES
+from bot_config import LANGUAGES, FEEDBACK_BUTTONS
 import os
 import glob
 from datetime import datetime, timedelta
-import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 def get_main_menu_keyboard(lang: str, has_article: bool = False):
     buttons = []
@@ -42,3 +44,10 @@ def cleanup_temp_files(max_age_hours=1):
                 logger.info(f"Removed temp file: {file_path}")
     except Exception as e:
         logger.error(f"Cleanup error: {str(e)}")
+
+def get_feedback_keyboard(lang: str):
+    return ReplyKeyboardMarkup([
+        [KeyboardButton(FEEDBACK_BUTTONS[lang]['like_btn']), 
+         KeyboardButton(FEEDBACK_BUTTONS[lang]['dislike_btn'])],
+        [KeyboardButton(LANGUAGES[lang]['cancel'])]
+    ], resize_keyboard=True)
