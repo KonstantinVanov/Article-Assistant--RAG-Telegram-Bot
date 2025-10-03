@@ -1,14 +1,13 @@
 import os
 import logging
 import bs4
+import tiktoken
+from dotenv import load_dotenv
 from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
-from dotenv import load_dotenv
-import tiktoken
 
-# Load environment variables
 load_dotenv()
 logger = logging.getLogger(__name__)
 
@@ -16,11 +15,9 @@ def _clean_html(content: str) -> str:
     """Remove unnecessary HTML tags and scripts while preserving main content."""
     soup = bs4.BeautifulSoup(content, "html.parser")
     
-    # Remove unwanted elements (adjust as needed)
     for element in soup(["script", "style", "nav", "footer", "iframe", "aside", "header", "meta", "link"]):
         element.decompose()
     
-    # Get text from remaining elements
     return soup.get_text(separator="\n", strip=True)
 
 def _count_tokens(text: str, model: str = "text-embedding-3-small") -> int:
@@ -29,7 +26,6 @@ def _count_tokens(text: str, model: str = "text-embedding-3-small") -> int:
         encoding = tiktoken.encoding_for_model(model)
         return len(encoding.encode(text))
     except:
-        # Fallback: approximate token count (1 token ≈ 4 characters)
         return len(text) // 4
 
 def _validate_file_source(source: str) -> None:
@@ -37,31 +33,20 @@ def _validate_file_source(source: str) -> None:
     if not os.path.exists(source):
         raise FileNotFoundError(f"File not found: {source}")
     
-    # Check file extension
     file_ext = source.split('.')[-1].lower()
     if file_ext not in ['pdf', 'txt']:
         raise ValueError(f"Unsupported file format: {file_ext}. Use PDF or TXT")
     
-    # Check file size
     file_size = os.path.getsize(source)
     if file_size == 0:
         raise ValueError("File is empty")
     
-    MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
+    MAX_FILE_SIZE = 20 * 1024 * 1024
     if file_size > MAX_FILE_SIZE:
         raise ValueError(f"File too large ({file_size/1024/1024:.1f}MB). Max size: 20MB")
 
 def _split_large_document(docs, max_tokens=250000):
-    """
-    Split document into smaller parts if it exceeds token limit.
-    
-    Args:
-        docs: List of documents
-        max_tokens: Maximum tokens per batch
-        
-    Returns:
-        List of documents that comply with token limits
-    """
+    """Split document into smaller parts if it exceeds token limit."""
     if not docs:
         return docs
     
@@ -72,9 +57,8 @@ def _split_large_document(docs, max_tokens=250000):
     
     logger.warning(f"Document too large ({total_tokens} tokens). Splitting into smaller parts...")
     
-    # Use more aggressive splitting for large documents
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,  # Smaller chunks for large documents
+        chunk_size=500,
         chunk_overlap=100,
         length_function=len,
         separators=["\n\n", "\n", ". ", " ", ""]
@@ -82,12 +66,10 @@ def _split_large_document(docs, max_tokens=250000):
     
     splits = text_splitter.split_documents(docs)
     
-    # Further split if still too large
     final_splits = []
     for split in splits:
         split_tokens = _count_tokens(split.page_content)
         if split_tokens > max_tokens:
-            # Extremely large chunk - split by sentences
             sentences = split.page_content.split('. ')
             current_chunk = ""
             for sentence in sentences:
@@ -109,25 +91,11 @@ def _split_large_document(docs, max_tokens=250000):
     return final_splits
 
 def reindex(source: str) -> int:
-    """
-    Reindex content from URL or file.
-    
-    Args:
-        source: URL starting with http/https or path to PDF/TXT file
-        
-    Returns:
-        int: Number of processed chunks
-        
-    Raises:
-        RuntimeError: If indexing fails
-    """
+    """Reindex content from URL or file."""
     try:
-        # Determine if source is URL or file path
         if source.startswith(('http://', 'https://')):
-            # Universal web article processing
             logger.info(f"📥 Loading article: {source}")
             
-            # Load with headers to mimic browser request
             loader = WebBaseLoader(
                 web_paths=(source,),
                 requests_kwargs={
@@ -139,11 +107,9 @@ def reindex(source: str) -> int:
             
             docs = loader.load()
             
-            # Clean HTML content for better processing
             if docs:
                 docs[0].page_content = _clean_html(docs[0].page_content)
         else:
-            # File processing (PDF/TXT)
             _validate_file_source(source)
             file_ext = source.split('.')[-1].lower()
             
@@ -154,7 +120,6 @@ def reindex(source: str) -> int:
             
             elif file_ext == 'txt':
                 logger.info(f"📥 Loading TXT file: {source}")
-                # Use TextLoader for automatic encoding detection
                 loader = TextLoader(source, encoding='utf-8', autodetect_encoding=True)
                 docs = loader.load()
         
@@ -164,17 +129,14 @@ def reindex(source: str) -> int:
         if not docs[0].page_content.strip():
             raise ValueError("No content found in the document")
         
-        # Check document size and split if too large
         docs = _split_large_document(docs, max_tokens=250000)
         
-        # Log document info
         total_tokens = sum(_count_tokens(doc.page_content) for doc in docs)
         logger.info(f"📄 Loaded document with {total_tokens} total tokens")
         
-        # Split text into chunks
         logger.info("✂️ Splitting document into chunks...")
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=800,  # Reduced from 1000
+            chunk_size=800,
             chunk_overlap=150,
             length_function=len,
             separators=["\n\n", "\n", ". ", " ", ""]
@@ -186,7 +148,6 @@ def reindex(source: str) -> int:
         
         logger.info(f"Created {len(splits)} chunks")
         
-        # Initialize embeddings
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY not found in environment variables")
@@ -195,14 +156,12 @@ def reindex(source: str) -> int:
             model="text-embedding-3-small",
             api_key=api_key,
             base_url="https://api.proxyapi.ru/openai/v1",
-            chunk_size=100  # Smaller batch size for embeddings
+            chunk_size=100
         )
         
-        # Create FAISS vector store in batches for large documents
         logger.info("📊 Creating FAISS vector store...")
         
         if len(splits) > 1000:
-            # Process in batches for very large documents
             logger.info(f"Processing {len(splits)} chunks in batches...")
             batch_size = 500
             vector_store = None
@@ -218,11 +177,9 @@ def reindex(source: str) -> int:
         else:
             vector_store = FAISS.from_documents(splits, embeddings)
         
-        # Ensure directory exists
         index_dir = "./faiss_index"
         os.makedirs(index_dir, exist_ok=True)
         
-        # Save to disk
         logger.info("💾 Saving vector store...")
         vector_store.save_local(index_dir)
         
@@ -273,29 +230,3 @@ def clear_index() -> bool:
     except Exception as e:
         logger.error(f"Error clearing index: {str(e)}")
         return False
-
-# Test function for module verification
-def test_indexer():
-    """Test function for indexer module verification."""
-    print("\n🧪 Testing Indexer Module\n")
-    
-    # Test API key
-    api_key = os.getenv("OPENAI_API_KEY")
-    if api_key:
-        print("✅ OpenAI API key found")
-    else:
-        print("❌ OpenAI API key not found")
-        return False
-    
-    # Test index directory
-    index_info = get_index_info()
-    if index_info:
-        print(f"✅ Index exists: {index_info['file_count']} files, {index_info['total_size']/1024:.1f}KB")
-    else:
-        print("ℹ️ No index found (this is normal for first run)")
-    
-    print("\n✅ Indexer module is ready!")
-    return True
-
-if __name__ == "__main__":
-    test_indexer()

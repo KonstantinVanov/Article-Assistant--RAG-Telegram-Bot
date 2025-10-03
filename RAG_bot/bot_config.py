@@ -1,9 +1,6 @@
-from pathlib import Path
-import os
-from dotenv import load_dotenv
 import sqlite3
-from datetime import datetime
 import logging
+from dotenv import load_dotenv
 
 # Initialize logging
 logging.basicConfig(
@@ -20,7 +17,6 @@ def init_db():
     conn = sqlite3.connect('user_data.db')
     cursor = conn.cursor()
     
-    # Оставляем только таблицу users (если она нужна)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY,
@@ -29,7 +25,6 @@ def init_db():
         )
     ''')
     
-    # УДАЛИТЬ таблицу feedback
     conn.commit()
     return conn
 
@@ -78,8 +73,6 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'prompt_saved': "✅ Custom prompt saved! Now ask your question.",
         'current_prompt': "Current prompt: {}",
         'setup_guide': "🔧 Setup guide: https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot#setup",
-        
-        # NEW KEYS ADDED:
         'invalid_url': "⚠️ Please enter a valid URL starting with http:// or https://",
         'file_too_large': "⚠️ File is too large (max 10MB). Please upload a smaller file.",
         'file_empty': "⚠️ The file is empty. Please upload a valid file with content.",
@@ -137,8 +130,6 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'prompt_saved': "✅ Промпт сохранён! Теперь задайте вопрос.",
         'current_prompt': "Текущий промпт: {}",
         'setup_guide': "🔧 Инструкция: https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot#setup",
-        
-        # NEW KEYS ADDED:
         'invalid_url': "⚠️ Пожалуйста, введите корректный URL, начинающийся с http:// или https://",
         'file_too_large': "⚠️ Файл слишком большой (макс. 10MB). Загрузите файл меньшего размера.",
         'file_empty': "⚠️ Файл пустой. Загрузите validный файл с содержимым.",
@@ -157,12 +148,8 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
 }
 
 # Conversation states
-(
-    MAIN_MENU, ENTER_LINK, CHANGE_LANG, 
-    ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC
-) = range(7)
+(MAIN_MENU, ENTER_LINK, CHANGE_LANG, ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC) = range(7)
 
-# Default prompts
 DEFAULT_PROMPT = {
     'en': """Expert Research Assistant Guidelines:
 
