@@ -12,7 +12,7 @@
 
 A Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexes web content and PDF files, then provides accurate answers with sources.
 
-![Answer Examples](images/Answer%20example_1.jpg) ![Answer Examples](images/Answer%20example_2.jpg)
+![Answer Examples](images/Answer%20example_1.jpg) ![Answer Examples](images/Answer%20example_3.jpg)
 
 ## 📖 Table of Contents
 - [Features](#-features)
