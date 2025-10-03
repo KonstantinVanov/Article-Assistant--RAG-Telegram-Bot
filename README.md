@@ -8,25 +8,32 @@
 ![RAG](https://img.shields.io/badge/tech-RAG-orange)
 ![PDF Support](https://img.shields.io/badge/feature-PDF%20Support-red)
 
+**Contact**: [@Konstantin_vanov](https://t.me/Konstantin_vanov)
 
-**My contact**: [@Konstantin_vanov](https://t.me/Konstantin_vanov)
+A Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexes web content and PDF files, then provides accurate answers with sources.
 
-Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexes web content and PDF files, then provides accurate answers with sources.
+![Answer Examples](images/Answer%20example_1.jpg) ![Answer Examples](images/Answer%20example_2.jpg)
 
-![Answer](images/answer1.jpg)
+## 📖 Table of Contents
+- [Features](#-features)
+- [Quick Start](#-quick-start)
+- [Docker Deployment](#-docker-deployment-recommended)
+- [Traditional Installation](#-traditional-installation-without-docker)
+- [Usage Examples](#-usage-examples)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
+
+
 
 ## 🌟 Features
-### Available in Demo Version:
-- **Web Article Processing** - Index content from URLs
-- **Multilingual Support** - English/Russian content
-- **Basic Q&A** - Ask questions about indexed content
-- **Text Summarization** - Generate key points summaries
-
-### Exclusive to Self-Hosted Version:
+- **Web Article Processing** - Index content from URLs ✅
+- **Multilingual Support** - English/Russian interfaces ✅
+- **Q&A System** - Ask questions about indexed content ✅
+- **Text Summarization** - Generate key points summaries ✅
 - **PDF File Support** - Upload and process PDF documents ✅
 - **TXT File Support** - Process text files directly ✅
 - **No Request Limits** - Unlimited questions and processing ✅
-- **Custom Configuration** - Adjust chunk sizes and parameters ✅
+- **Custom Prompts** - Adjust AI behavior and responses ✅
 
 ## 🚀 Quick Start
 
@@ -34,22 +41,6 @@ Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexe
 - Python 3.9+ or Docker
 - [Telegram Bot Token](https://core.telegram.org/bots#how-do-i-create-a-bot)
 - [OpenAI API Key](https://platform.openai.com/api-keys)
-
-## 📊 Feedback System
-
-The bot now includes a user feedback system that helps improve the quality of responses:
-
-### 🎯Features
-- **👍👎 Response rating**: users can like or dislike AI responses.
-- **Multilingual**: supports English and Russian interfaces.
-- **Anonymous analytics**: collects feedback while maintaining privacy.
-- **Data export**: downloads feedback in CSV format for analysis.
-
-### 📊 How it works
-1. After each AI response, users see feedback buttons.
-2. Ratings are stored in a SQLite database with timestamps.
-3. Use `feedback_analyzer.py` to view statistics:
-### Installation instructions are in the file ADD FEEDBACK
 
 ### RAG System Workflow
 
@@ -63,7 +54,7 @@ The easiest way to deploy with all dependencies included:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-## Quick Start with Docker
+### Quick Start with Docker
 
 ```bash
 # Clone the repository
@@ -81,21 +72,19 @@ docker-compose up -d --build
 # View logs to verify everything is working
 docker-compose logs -f telegram-bot
 ```
+
 ### Docker Commands
-Command	Description
-``` bash
-#Build and start in background
-docker-compose up -d --build
-#remove containers
-docker-compose down	Stop and
-#Follow bot logs
-docker-compose logs -f telegram-bot
-#Restart only the bot
-docker-compose restart telegram-bot	
-```
-### Traditional Installation (Without Docker)
-### Clone and setup
-``` bash
+
+| Command | Description |
+|---------|-------------|
+| `docker-compose up -d --build` | Build and start in background |
+| `docker-compose down` | Stop and remove containers |
+| `docker-compose logs -f telegram-bot` | Follow bot logs |
+| `docker-compose restart telegram-bot` | Restart only the bot |
+## 🔧 Traditional Installation (Without Docker)
+
+### Clone and Setup
+```bash
 git clone https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot
 cd Article-Assistant--RAG-Telegram-Bot
 python -m venv venv
@@ -103,39 +92,67 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate     # Windows
 pip install -r requirements.txt
 ```
+
 ### Configuration
-``` bash
+```bash
 cp .env.example .env
 ```
-### Add your credentials to .env file
+
+### Environment Variables
+Create a `.env` file with:
+```env
+TELEGRAM_TOKEN=your_telegram_bot_token_here
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
 ### Launch
+```bash
 python RAG_bot/bot_main.py
+```
 
-### 🤝 Contributing
-We love contributions! Please read our Contributing Guide to learn how you can help improve this project.
+## 📱 Usage Examples
 
-How to Contribute:
-Fork the repository
+1. **Upload a PDF**: Send a PDF file to the bot
+2. **Ask questions**: Type your question after indexing
+3. **Get summaries**: Use the "Summary" button for key points
+4. **Change language**: Use the language button to switch between English/Russian
 
-Create a feature branch (git checkout -b feature/improvement)
+## 🔧 Troubleshooting
 
-Commit your changes (git commit -am 'Add new feature')
+### Common Issues
 
-Push to the branch (git push origin feature/improvement)
+- **Bot not responding**: Check if all environment variables are set correctly
+- **Indexing fails**: Ensure OpenAI API key is valid and has sufficient credits
+- **File upload issues**: Check file size limits (max 10MB for files)
+- **Vector store errors**: Delete `faiss_index` folder and re-index your content
 
-Open a Pull Request
+### Getting Help
 
-### 📜 License
-MIT License © 2025 Konstantin. See LICENSE file for details.
+- Check the logs: `docker-compose logs -f telegram-bot`
+- Verify environment variables are loaded
+- Ensure OpenAI API key has sufficient credits
 
-### 📬 Support
+## 🤝 Contributing
+
+We love contributions! Please read our [Contributing Guide](CONTRIBUTING.md) to learn how you can help improve this project.
+
+### How to Contribute
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/improvement`)
+3. Commit your changes (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/improvement`)
+5. Open a Pull Request
+
+## 📜 License
+
+MIT License © 2025 Konstantin. See [LICENSE](LICENSE) file for details.
+
+## 📬 Support
+
 For assistance, please:
 
-Check the troubleshooting section
 
-Search existing issues
-
-Open a new issue with detailed information
-
-Contact @Konstantin_vanov on Telegram
+- Search [existing issues](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/issues)
+- Open a [new issue](https://github.com/Konstantin-vanov-hub/Article-Assistant--RAG-Telegram-Bot/issues/new) with detailed information
+- Contact [@Konstantin_vanov](https://t.me/Konstantin_vanov) on Telegram
