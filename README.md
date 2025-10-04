@@ -44,7 +44,8 @@ A Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Inde
 
 ### RAG System Workflow
 
-![alt text](images/scheme.png)
+![Scheme](images/scheme.png)
+![Scheme](images/Scheme1.jpg)
 
 ## 🐳 Docker Deployment (Recommended)
 
