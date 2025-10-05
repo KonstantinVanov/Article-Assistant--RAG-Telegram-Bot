@@ -12,6 +12,8 @@
 
 A Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Indexes web content and PDF files, then provides accurate answers with sources.
 
+![LOGO](images/LOGO.jpg)
+
 ![Answer Examples](images/Answer%20example_2.jpg)
 
 ## 📖 Table of Contents
@@ -27,6 +29,7 @@ A Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Inde
 
 ## 🌟 Features
 - **Web Article Processing** - Index content from URLs ✅
+- **YouTube Video Processing** - Download and transcribe YouTube videos ✅
 - **Multilingual Support** - English/Russian interfaces ✅
 - **Q&A System** - Ask questions about indexed content ✅
 - **Text Summarization** - Generate key points summaries ✅
@@ -114,9 +117,26 @@ python RAG_bot/bot_main.py
 ## 📱 Usage Examples
 
 1. **Upload a PDF**: Send a PDF file to the bot
-2. **Ask questions**: Type your question after indexing
-3. **Get summaries**: Use the "Summary" button for key points
-4. **Change language**: Use the language button to switch between English/Russian
+2. **Process YouTube Videos**: Enter a YouTube URL to download and transcribe
+3. **Ask questions**: Type your question after indexing
+4. **Get summaries**: Use the "Summary" button for key points
+5. **Change language**: Use the language button to switch between English/Russian
+
+### YouTube Video Processing
+
+The bot can now process YouTube videos! Here's how:
+
+1. Click "📹 Process YouTube Video" in the main menu
+2. Paste a YouTube video URL
+3. The bot will:
+   - Download the video audio
+   - Transcribe it using OpenAI Whisper
+   - Index the transcript for Q&A
+4. Ask questions about the video content
+5. Get summaries of the video
+
+**Supported formats**: YouTube URLs (youtube.com, youtu.be)
+**Limitations**: Videos up to 2 hours maximum
 
 ## 🔧 Troubleshooting
 
@@ -126,6 +146,11 @@ python RAG_bot/bot_main.py
 - **Indexing fails**: Ensure OpenAI API key is valid and has sufficient credits
 - **File upload issues**: Check file size limits (max 10MB for files)
 - **Vector store errors**: Delete `faiss_index` folder and re-index your content
+- **YouTube processing fails**: 
+  - Ensure video is not longer than 2 hours
+  - Check if the YouTube URL is valid and accessible
+  - Verify Whisper model is properly installed
+  - Check available disk space for temporary files
 
 ### Getting Help
 
