@@ -7,3 +7,5 @@ python-dotenv==1.1.1
 python-telegram-bot
 faiss-cpu
 logger
+yt_dlp
+whisper
