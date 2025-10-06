@@ -17,6 +17,7 @@ A Telegram bot for Q&A about articles using Retrieval-Augmented Generation. Inde
 ## Examples
 ![Answer Examples](images/Answer%20example_2.jpg)
 
+
 ![Welcome](images/Welcome%20message.jpg)
 
 ## 📖 Table of Contents
