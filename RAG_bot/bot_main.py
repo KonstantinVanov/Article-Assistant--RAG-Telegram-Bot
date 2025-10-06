@@ -5,11 +5,11 @@ from telegram.ext import (
 )
 from bot_handlers import (
     start, main_menu, handle_question, handle_link, 
-    handle_language, handle_prompt_menu, handle_custom_prompt, handle_summarize
+    handle_language, handle_prompt_menu, handle_custom_prompt, handle_summarize, handle_youtube_url
 )
 from bot_config import (
     MAIN_MENU, ENTER_LINK, CHANGE_LANG, 
-    ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC, logger
+    ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC, ENTER_YOUTUBE_URL, logger
 )
 
 def main():
@@ -38,6 +38,7 @@ def main():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, handle_link),
                 MessageHandler(filters.Document.ALL, handle_link)
             ],
+            ENTER_YOUTUBE_URL: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_youtube_url)],
             CHANGE_LANG: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_language)],
             PROMPT_MENU: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_prompt_menu)],
             ENTER_CUSTOM_PROMPT: [MessageHandler(filters.TEXT & ~filters.COMMAND, handle_custom_prompt)],

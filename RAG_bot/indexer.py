@@ -7,6 +7,7 @@ from langchain_community.document_loaders import WebBaseLoader, PyPDFLoader, Tex
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
+from langchain_core.documents import Document
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -89,6 +90,116 @@ def _split_large_document(docs, max_tokens=250000):
     
     logger.info(f"Split large document into {len(final_splits)} parts")
     return final_splits
+
+def reindex_video_transcript(video_title: str, transcript: str, video_info: str = "") -> int:
+    """Index video transcript content."""
+    try:
+        if not transcript or not transcript.strip():
+            raise ValueError("No transcript content provided")
+        
+        logger.info(f"📥 Indexing video transcript: {video_title}")
+        
+        # Create a document from the transcript
+        metadata = {
+            "source": f"YouTube Video: {video_title}",
+            "type": "video_transcript",
+            "video_info": video_info
+        }
+        
+        doc = Document(page_content=transcript, metadata=metadata)
+        docs = [doc]
+        
+        # Split the transcript into chunks
+        logger.info("✂️ Splitting transcript into chunks...")
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=800,
+            chunk_overlap=150,
+            length_function=len,
+            separators=["\n\n", "\n", ". ", " ", ""]
+        )
+        splits = text_splitter.split_documents(docs)
+        
+        if not splits:
+            raise ValueError("No chunks were created after splitting")
+        
+        logger.info(f"Created {len(splits)} chunks from transcript")
+        
+        # Create embeddings and vector store
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY not found in environment variables")
+        
+        # Initialize embeddings with simple retry on transient network timeouts
+        from time import sleep
+        last_err = None
+        for attempt in range(1, 4):
+            try:
+                embeddings = OpenAIEmbeddings(
+                    model="text-embedding-3-small",
+                    api_key=api_key,
+                    base_url="https://api.proxyapi.ru/openai/v1",
+                    chunk_size=100
+                )
+                break
+            except Exception as e:
+                last_err = e
+                logger.warning(f"Embeddings init attempt {attempt} failed: {e}")
+                sleep(2 * attempt)
+        else:
+            raise RuntimeError(f"Failed to initialize embeddings: {last_err}")
+        
+        logger.info("📊 Creating FAISS vector store...")
+        
+        if len(splits) > 1000:
+            logger.info(f"Processing {len(splits)} chunks in batches...")
+            batch_size = 500
+            vector_store = None
+            
+            for i in range(0, len(splits), batch_size):
+                batch = splits[i:i + batch_size]
+                logger.info(f"Processing batch {i//batch_size + 1}/{(len(splits)-1)//batch_size + 1}")
+                
+                # Retry per batch to handle transient timeouts
+                last_err = None
+                for attempt in range(1, 4):
+                    try:
+                        if vector_store is None:
+                            vector_store = FAISS.from_documents(batch, embeddings)
+                        else:
+                            vector_store.add_documents(batch)
+                        break
+                    except Exception as e:
+                        last_err = e
+                        logger.warning(f"Batch {i//batch_size + 1} attempt {attempt} failed: {e}")
+                        sleep(2 * attempt)
+                else:
+                    raise RuntimeError(f"Failed processing batch {i//batch_size + 1}: {last_err}")
+        else:
+            # Single-shot with retry
+            last_err = None
+            for attempt in range(1, 4):
+                try:
+                    vector_store = FAISS.from_documents(splits, embeddings)
+                    break
+                except Exception as e:
+                    last_err = e
+                    logger.warning(f"Vector store build attempt {attempt} failed: {e}")
+                    sleep(2 * attempt)
+            else:
+                raise RuntimeError(f"Failed to build vector store: {last_err}")
+        
+        index_dir = "./faiss_index"
+        os.makedirs(index_dir, exist_ok=True)
+        
+        logger.info("💾 Saving vector store...")
+        vector_store.save_local(index_dir)
+        
+        logger.info(f"✅ Created vector store with {len(splits)} chunks from video transcript")
+        return len(splits)
+        
+    except Exception as e:
+        logger.error(f"Video transcript indexing failed: {str(e)}")
+        raise RuntimeError(f"Video transcript indexing failed: {str(e)}")
 
 def reindex(source: str) -> int:
     """Reindex content from URL or file."""

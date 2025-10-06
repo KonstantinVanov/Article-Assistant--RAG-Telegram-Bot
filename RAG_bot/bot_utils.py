@@ -13,6 +13,7 @@ def get_main_menu_keyboard(lang: str, has_article: bool = False):
         ])
     buttons.extend([
         [KeyboardButton(LANGUAGES[lang]['article_btn'])],
+        [KeyboardButton(LANGUAGES[lang]['youtube_btn'])],
         [KeyboardButton(LANGUAGES[lang]['lang_btn']), KeyboardButton(LANGUAGES[lang]['prompt_btn'])]
     ])
     return ReplyKeyboardMarkup(buttons, resize_keyboard=True)

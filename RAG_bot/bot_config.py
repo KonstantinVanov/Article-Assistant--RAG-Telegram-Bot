@@ -86,7 +86,20 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'api_key_error': "❌ System error: API key configuration issue. Please contact administrator.",
         'processing_file': "🔍 Processing your file...",
         'document_too_large': "⚠️ Document is too large. Processing in parts...",
-        'max_size_exceeded': "❌ Document exceeds maximum processing size. Please use a smaller document."
+        'max_size_exceeded': "❌ Document exceeds maximum processing size. Please use a smaller document.",
+        'youtube_btn': "📹 Process YouTube Video",
+        'enter_youtube_url': "🎥 Please enter a YouTube video URL:",
+        'downloading_video': "⬇️ Downloading video...",
+        'transcribing_video': "🎤 Transcribing video content...",
+        'video_processed': "✅ Video processed successfully!",
+        'video_title': "📺 Video: {}",
+        'video_duration': "⏱️ Duration: {}",
+        'transcript_length': "📝 Transcript length: {} characters",
+        'invalid_youtube_url': "⚠️ Please enter a valid YouTube URL",
+        'video_too_long': "⚠️ Video is too long (max 2 hours). Please choose a shorter video.",
+        'transcription_failed': "❌ Failed to transcribe video. Please try another video.",
+        'download_failed': "❌ Failed to download video. Please check the URL and try again.",
+        'youtube_processing_error': "❌ Error processing YouTube video: {}"
     },
     'ru': {
         'welcome': """<b>— Добро пожаловать в Article Assistant!</b>
@@ -143,12 +156,25 @@ This bot uses RAG (Retrieval-Augmented Generation) to answer questions based on 
         'api_key_error': "❌ Системная ошибка: проблема с API ключом. Свяжитесь с администратором.",
         'processing_file': "🔍 Обрабатываю ваш файл...",
         'document_too_large': "⚠️ Документ слишком большой. Обрабатываю по частям...",
-        'max_size_exceeded': "❌ Документ превышает максимальный размер обработки. Используйте документ меньшего размера."
+        'max_size_exceeded': "❌ Документ превышает максимальный размер обработки. Используйте документ меньшего размера.",
+        'youtube_btn': "📹 Обработать YouTube видео",
+        'enter_youtube_url': "🎥 Пожалуйста, введите URL YouTube видео:",
+        'downloading_video': "⬇️ Загружаю видео...",
+        'transcribing_video': "🎤 Транскрибирую содержимое видео...",
+        'video_processed': "✅ Видео успешно обработано!",
+        'video_title': "📺 Видео: {}",
+        'video_duration': "⏱️ Длительность: {}",
+        'transcript_length': "📝 Длина транскрипта: {} символов",
+        'invalid_youtube_url': "⚠️ Пожалуйста, введите корректный YouTube URL",
+        'video_too_long': "⚠️ Видео слишком длинное (макс. 2 часа). Выберите более короткое видео.",
+        'transcription_failed': "❌ Не удалось транскрибировать видео. Попробуйте другое видео.",
+        'download_failed': "❌ Не удалось загрузить видео. Проверьте URL и попробуйте снова.",
+        'youtube_processing_error': "❌ Ошибка обработки YouTube видео: {}"
     }
 }
 
 # Conversation states
-(MAIN_MENU, ENTER_LINK, CHANGE_LANG, ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC) = range(7)
+(MAIN_MENU, ENTER_LINK, CHANGE_LANG, ASK_QUESTION, PROMPT_MENU, ENTER_CUSTOM_PROMPT, SUMMARIZE_DOC, ENTER_YOUTUBE_URL) = range(8)
 
 DEFAULT_PROMPT = {
     'en': """Expert Research Assistant Guidelines:

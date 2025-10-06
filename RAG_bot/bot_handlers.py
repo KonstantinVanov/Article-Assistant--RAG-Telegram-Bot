@@ -8,10 +8,11 @@ from bot_utils import (
 )
 from bot_config import (
     LANGUAGES, DEFAULT_PROMPT, MAIN_MENU, ENTER_CUSTOM_PROMPT,
-    ENTER_LINK, ASK_QUESTION, CHANGE_LANG, PROMPT_MENU, logger
+    ENTER_LINK, ASK_QUESTION, CHANGE_LANG, PROMPT_MENU, ENTER_YOUTUBE_URL, logger
 )
 from Requests import answer
-from indexer import reindex
+from indexer import reindex, reindex_video_transcript
+from youtube_processor import YouTubeProcessor
 import os
 
 # Handlers
@@ -37,6 +38,7 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     valid_commands = [
         LANGUAGES[lang]['ask_btn'],
         LANGUAGES[lang]['article_btn'],
+        LANGUAGES[lang]['youtube_btn'],
         LANGUAGES[lang]['lang_btn'],
         LANGUAGES[lang]['prompt_btn'],
         LANGUAGES[lang]['summarize_btn'],
@@ -70,6 +72,13 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=get_cancel_keyboard(lang)
         )
         return ENTER_LINK
+    
+    if text == LANGUAGES[lang]['youtube_btn']:
+        await update.message.reply_text(
+            LANGUAGES[lang]['enter_youtube_url'],
+            reply_markup=get_cancel_keyboard(lang)
+        )
+        return ENTER_YOUTUBE_URL
     
     if text == LANGUAGES[lang]['lang_btn']:
         await update.message.reply_text(
@@ -378,6 +387,119 @@ async def handle_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             LANGUAGES[current_lang].get('select_lang', 'Please select language'),
             reply_markup=get_lang_menu_keyboard()
+        )
+    
+    return MAIN_MENU
+
+async def handle_youtube_url(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Handle YouTube video URL processing"""
+    lang = context.user_data.get('lang', 'en')
+    has_article = context.user_data.get('has_article', False)
+    text = update.message.text
+    
+    def get_text(key, default):
+        return LANGUAGES[lang].get(key, LANGUAGES['en'].get(key, default))
+    
+    if text == get_text('cancel', 'Cancel'):
+        await update.message.reply_text(
+            get_text('cancel', 'Canceled'),
+            reply_markup=get_main_menu_keyboard(lang, has_article)
+        )
+        return MAIN_MENU
+    
+    try:
+        # Validate YouTube URL
+        if not text.startswith(('http://', 'https://')):
+            await update.message.reply_text(
+                get_text('invalid_youtube_url', 'Please enter a valid YouTube URL'),
+                reply_markup=get_cancel_keyboard(lang)
+            )
+            return ENTER_YOUTUBE_URL
+        
+        # Check if it's a YouTube URL
+        youtube_domains = ['youtube.com', 'youtu.be']
+        if not any(domain in text.lower() for domain in youtube_domains):
+            await update.message.reply_text(
+                get_text('invalid_youtube_url', 'Please enter a valid YouTube URL'),
+                reply_markup=get_cancel_keyboard(lang)
+            )
+            return ENTER_YOUTUBE_URL
+        
+        # Initialize YouTube processor
+        processor = YouTubeProcessor()
+        
+        # Download video
+        await update.message.reply_text(
+            get_text('downloading_video', 'Downloading video...'),
+            reply_markup=get_cancel_keyboard(lang)
+        )
+        
+        video_title, transcript, video_info = processor.process_youtube_video(text)
+        
+        if not video_title or not transcript:
+            # Provide more detailed error information
+            if not video_title:
+                error_msg = get_text('download_failed', 'Failed to download video')
+            elif not transcript:
+                error_msg = get_text('transcription_failed', 'Failed to transcribe video')
+                # Add specific error details if available
+                if video_info and "Transcription failed" in video_info:
+                    error_msg += f"\n\nДетали ошибки: {video_info}"
+            else:
+                error_msg = video_info or get_text('youtube_processing_error', 'Error processing YouTube video')
+            
+            await update.message.reply_text(
+                f"❌ {error_msg}",
+                reply_markup=get_main_menu_keyboard(lang, has_article)
+            )
+            processor.cleanup()
+            return MAIN_MENU
+        
+        # Transcribe video
+        await update.message.reply_text(
+            get_text('transcribing_video', 'Transcribing video content...'),
+            reply_markup=get_cancel_keyboard(lang)
+        )
+        
+        # Index the transcript
+        await update.message.reply_text(
+            get_text('indexing', 'Indexing video content...'),
+            reply_markup=get_cancel_keyboard(lang)
+        )
+        
+        num_chunks = reindex_video_transcript(video_title, transcript, video_info)
+        
+        # Update user data
+        context.user_data['has_article'] = True
+        context.user_data['last_source_type'] = 'youtube'
+        context.user_data['last_source'] = video_title
+        
+        # Send success message
+        success_message = get_text('video_processed', 'Video processed successfully!')
+        success_message += f"\n\n{get_text('video_title', 'Video: {}').format(video_title)}"
+        if video_info:
+            success_message += f"\n{get_text('video_duration', 'Duration: {}').format(video_info)}"
+        success_message += f"\n{get_text('transcript_length', 'Transcript length: {} characters').format(len(transcript))}"
+        
+        chunks_message = get_text('chunks_info', 'Processed {} chunks').format(num_chunks)
+        chunks_message += "\n\nYou can now ask questions about this video content."
+        
+        await update.message.reply_text(success_message)
+        await update.message.reply_text(
+            chunks_message,
+            reply_markup=get_main_menu_keyboard(lang, has_article=True),
+            parse_mode="Markdown"
+        )
+        
+        # Cleanup
+        processor.cleanup()
+        
+    except Exception as e:
+        logger.error(f"YouTube processing error: {str(e)}")
+        error_msg = get_text('youtube_processing_error', 'Error processing YouTube video: {}').format(str(e))
+        await update.message.reply_text(
+            error_msg,
+            reply_markup=get_main_menu_keyboard(lang, has_article)
         )
     
     return MAIN_MENU
